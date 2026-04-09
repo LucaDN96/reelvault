@@ -1,0 +1,72 @@
+export default {
+  // Auth
+  auth_tagline: 'Save any Instagram reel in 2 seconds. Organized by AI.',
+  auth_email_placeholder: 'Enter your email',
+  auth_send_magic_link: 'Send magic link',
+  auth_check_email: 'Check your email for the login link.',
+  auth_sending: 'Sending…',
+
+  // Library
+  search_placeholder: 'Search reels…',
+  sort_newest: 'Newest',
+  sort_oldest: 'Oldest',
+  filter_all: 'All',
+  empty_state: 'No reels yet. Send an Instagram link to @ReelVaultBot on Telegram to get started.',
+  empty_filtered: 'No reels in this category.',
+  free_banner: 'You have {count}/30 reels saved.',
+  free_banner_upgrade: 'Upgrade to Pro for unlimited.',
+
+  // Detail
+  open_instagram: 'Open in Instagram',
+  delete_reel: 'Delete reel',
+  delete_confirm: 'Delete this reel?',
+  delete_confirm_yes: 'Delete',
+  delete_confirm_no: 'Cancel',
+  note_placeholder: 'Add a note…',
+  note_saved: 'Saved ✓',
+  category_label: 'Category',
+  add_custom_category: '+ Add custom category',
+  new_category_placeholder: 'New category name',
+
+  // Settings
+  settings_title: 'Settings',
+  account_section: 'Account',
+  plan_section: 'Plan',
+  telegram_section: 'Telegram',
+  data_section: 'Data',
+  logout: 'Log out',
+
+  plan_free: 'Free plan',
+  plan_pro: 'Pro plan ✓',
+  plan_free_badge: 'Free — {count}/30 reels used',
+  plan_pro_badge: 'Pro — unlimited reels',
+  upgrade_btn: 'Upgrade to Pro — €1.99/month',
+  manage_sub: 'Manage subscription',
+
+  telegram_not_linked: 'Connect Telegram',
+  telegram_step1: 'Open @ReelVaultBot on Telegram',
+  telegram_step2: 'Send /start and follow the instructions',
+  telegram_step3: 'Enter your ReelVault email when asked',
+  telegram_step4: 'Enter the verification code sent to your email',
+  telegram_check: 'Check connection',
+  telegram_checking: 'Checking…',
+  telegram_connected: '✅ Telegram connected',
+  telegram_unlink: 'Unlink',
+  telegram_unlink_confirm: 'Unlink your Telegram account?',
+
+  export_library: 'Export library',
+  export_by_category: 'Export by category',
+  export_btn: 'Export',
+  import_json: 'Import from JSON',
+  import_btn: 'Import',
+  import_success: 'Imported {count} reels ({skipped} skipped).',
+  export_pro_locked: 'Export is a Pro feature.',
+  import_pro_locked: 'Import is a Pro feature.',
+  upgrade_prompt: 'Upgrade to Pro',
+
+  // Common
+  loading: 'Loading…',
+  error_generic: 'Something went wrong. Please try again.',
+  back: 'Back',
+  date_saved: 'Saved',
+};

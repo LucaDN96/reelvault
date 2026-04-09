@@ -1,0 +1,21 @@
+{
+  "name": "reelvault-backend",
+  "version": "1.0.0",
+  "description": "ReelVault backend API + Telegram bot",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "@supabase/supabase-js": "^2.43.0",
+    "cheerio": "^1.0.0",
+    "express": "^4.19.0",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^6.9.13",
+    "stripe": "^15.8.0",
+    "telegraf": "^4.16.3"
+  }
+}

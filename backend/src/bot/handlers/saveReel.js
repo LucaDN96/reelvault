@@ -49,15 +49,7 @@ export async function handleSaveReel(ctx, url, userProfile) {
       : Promise.resolve([])
   ]);
 
-  let category = 'Other';
-  let isCustom = false;
-  try {
-    const result = await categorizeReel(caption, author, customCats);
-    category = result.category;
-    isCustom = result.isCustom;
-  } catch (err) {
-    console.error('Categorization failed:', err);
-  }
+  const { category, isCustom } = categorizeReel(caption, author, customCats);
 
   // Save to Supabase
   const { error } = await supabaseAdmin

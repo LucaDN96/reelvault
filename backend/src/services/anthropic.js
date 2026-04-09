@@ -1,43 +1,31 @@
-import Anthropic from '@anthropic-ai/sdk';
+export const FIXED_CATEGORIES = ['Cooking', 'Design', 'Music', 'Travel', 'Sport', 'Humor', 'Fashion', 'Tech', 'Other'];
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-const FIXED_CATEGORIES = ['Cooking', 'Design', 'Music', 'Travel', 'Sport', 'Humor', 'Fashion', 'Tech', 'Other'];
+const KEYWORDS = {
+  Cooking: ['food','recipe','cook','chef','eat','dinner','lunch','breakfast','pasta','pizza','cake','bake','kitchen','ingredient','meal','restaurant','taste','delicious','yummy'],
+  Design:  ['design','ui','ux','typography','font','color','brand','logo','creative','aesthetic','art','illustration','graphic','visual','layout','figma','sketch'],
+  Music:   ['music','song','guitar','piano','drum','bass','sing','singer','band','concert','track','beat','melody','rhythm','lyrics','album','dj','remix'],
+  Travel:  ['travel','trip','vacation','flight','hotel','city','country','explore','adventure','beach','mountain','nature','destination','tourism','visit'],
+  Sport:   ['sport','fitness','gym','workout','run','football','soccer','basketball','tennis','swim','yoga','training','exercise','athlete','game','match'],
+  Humor:   ['funny','lol','laugh','joke','meme','comedy','hilarious','prank','fun','haha','humor','viral'],
+  Fashion: ['fashion','style','outfit','clothes','wear','dress','shoes','bag','brand','luxury','trend','model','look','ootd'],
+  Tech:    ['tech','code','software','app','ai','programming','developer','startup','product','saas','web','mobile','javascript','python','data'],
+};
 
 /**
- * Categorize a reel using Claude.
+ * Categorize a reel using keyword matching.
  * @param {string} caption
  * @param {string} author
- * @param {string[]} [customCategories] - Pro user's custom categories
- * @returns {Promise<{category: string, isCustom: boolean}>}
+ * @param {string[]} [customCategories] - Pro user's custom categories (unused — no keyword map available)
+ * @returns {{ category: string, isCustom: boolean }}
  */
-export async function categorizeReel(caption, author, customCategories = []) {
-  const allCategories = [...FIXED_CATEGORIES, ...customCategories];
-  const categoryList = allCategories.join(', ');
+export function categorizeReel(caption, author, customCategories = []) {
+  const text = `${caption || ''} ${author || ''}`.toLowerCase();
 
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 50,
-    messages: [
-      {
-        role: 'user',
-        content: `Categorize this Instagram reel into exactly one of these categories: ${categoryList}.
+  for (const [category, keywords] of Object.entries(KEYWORDS)) {
+    if (keywords.some(kw => text.includes(kw))) {
+      return { category, isCustom: false };
+    }
+  }
 
-Author: ${author || 'unknown'}
-Caption: ${caption || '(no caption)'}
-
-Reply with only the category name, nothing else.`
-      }
-    ]
-  });
-
-  const raw = response.content[0].text.trim();
-  // Validate that the returned category is one we offered
-  const matched = allCategories.find(c => c.toLowerCase() === raw.toLowerCase());
-  const category = matched || 'Other';
-  const isCustom = customCategories.map(c => c.toLowerCase()).includes(category.toLowerCase());
-
-  return { category, isCustom };
+  return { category: 'Other', isCustom: false };
 }
-
-export { FIXED_CATEGORIES };

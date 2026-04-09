@@ -32,10 +32,10 @@ export function AuthProvider({ children }) {
     await loadProfile(session.user.id);
   }
 
-  async function signIn(email) {
+  async function signIn(email, redirectTo) {
     return supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/app` }
+      options: { emailRedirectTo: redirectTo || `${window.location.origin}/app` }
     });
   }
 

@@ -4,6 +4,7 @@ import reelsRouter        from './routes/reels.js';
 import categoriesRouter   from './routes/categories.js';
 import exportImportRouter from './routes/exportImport.js';
 import stripeRouter, { stripeWebhookRouter } from './routes/stripe.js';
+import telegramRouter     from './routes/telegram.js';
 
 export function createApp() {
   const app = express();
@@ -36,11 +37,12 @@ export function createApp() {
   app.get('/health', (_req, res) => res.json({ ok: true }));
 
   // ── Authenticated routes ──────────────────────────────────────────────────
-  app.use('/reels',      requireAuth, reelsRouter);
-  app.use('/categories', requireAuth, categoriesRouter);
-  app.use('/export',     requireAuth, exportImportRouter);
-  app.use('/import',     requireAuth, exportImportRouter);
-  app.use('/stripe',     requireAuth, stripeRouter);
+  app.use('/reels',         requireAuth, reelsRouter);
+  app.use('/categories',    requireAuth, categoriesRouter);
+  app.use('/export',        requireAuth, exportImportRouter);
+  app.use('/import',        requireAuth, exportImportRouter);
+  app.use('/stripe',        requireAuth, stripeRouter);
+  app.use('/auth/telegram', requireAuth, telegramRouter);
 
   // ── Error handler ─────────────────────────────────────────────────────────
   app.use((err, _req, res, _next) => {

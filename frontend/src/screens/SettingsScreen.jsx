@@ -37,18 +37,14 @@ export default function SettingsScreen() {
     } catch { setLoad('portal', false); }
   }
 
-  // ── Telegram check ──────────────────────────────────────────────────────────
-  async function handleCheckTelegram() {
-    setCheckingTelegram(true);
-    await refreshProfile();
-    setCheckingTelegram(false);
-    setTelegramStatus(profile?.telegram_linked ? 'connected' : 'not_connected');
-  }
-
   async function handleUnlink() {
     if (!confirm(t('telegram_unlink_confirm'))) return;
-    // Unlink is done via the bot (/unlink) — inform the user
-    alert('To unlink, send /unlink to @' + BOT_USERNAME + ' on Telegram.');
+    setLoad('unlink', true);
+    try {
+      await api.telegram.unlink();
+      await refreshProfile();
+    } catch (e) { alert(e.message); }
+    setLoad('unlink', false);
   }
 
   // ── Export ──────────────────────────────────────────────────────────────────
@@ -155,26 +151,27 @@ export default function SettingsScreen() {
           {profile?.telegram_linked ? (
             <div>
               <div className="telegram-connected">{t('telegram_connected')} — {profile.email}</div>
-              <button className="btn btn-ghost mt-8" onClick={handleUnlink}>{t('telegram_unlink')}</button>
+              <button className="btn btn-ghost mt-8" onClick={handleUnlink} disabled={loading.unlink}>
+                {loading.unlink ? t('loading') : t('telegram_unlink')}
+              </button>
             </div>
           ) : (
             <div className="telegram-onboarding">
-              {[1, 2, 3, 4].map(step => (
-                <div key={step} className="tg-step">
-                  <span className="tg-step-num">{step}</span>
-                  <span className="tg-step-text">
-                    {step === 1
-                      ? <a href={`https://t.me/${BOT_USERNAME}`} target="_blank" rel="noopener noreferrer">{t('telegram_step1', { botUsername: BOT_USERNAME })}</a>
-                      : t(`telegram_step${step}`)
-                    }
-                  </span>
-                </div>
-              ))}
-              <button className="btn btn-ghost mt-12" onClick={handleCheckTelegram} disabled={checkingTelegram}>
-                {checkingTelegram ? t('telegram_checking') : t('telegram_check')}
+              <p className="hint-text" style={{ marginBottom: 12 }}>
+                Open the bot on Telegram — it will send you a one-click connect link.
+              </p>
+              <a
+                href={`https://t.me/${BOT_USERNAME}?start=connect`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+                style={{ textDecoration: 'none' }}
+              >
+                Open @{BOT_USERNAME}
+              </a>
+              <button className="btn btn-ghost mt-8" onClick={refreshProfile}>
+                ↻ Check connection
               </button>
-              {telegramStatus === 'connected' && <p className="success-text">{t('telegram_connected')}</p>}
-              {telegramStatus === 'not_connected' && <p className="hint-text">Not connected yet. Follow the steps above.</p>}
             </div>
           )}
         </section>

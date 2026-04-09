@@ -680,6 +680,37 @@ a:hover { text-decoration: underline; }
 .success-text { font-size: 13px; color: var(--success); }
 .hint-text    { font-size: 13px; color: var(--text-muted); }
 
+/* ── Connect Telegram screen ─────────────────────────────────────────────── */
+.connect-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 24px 16px;
+  background: var(--bg);
+}
+
+.connect-card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.connect-icon  { font-size: 48px; }
+.connect-title { font-size: 22px; font-weight: 700; }
+.connect-sub   { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+.connect-error { font-size: 14px; color: var(--danger); }
+
+.connect-card .btn { width: 100%; }
+
 /* ── Utilities ───────────────────────────────────────────────────────────── */
 .mt-8  { margin-top: 8px; }
 .mt-12 { margin-top: 12px; }

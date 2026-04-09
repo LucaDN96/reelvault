@@ -1,6 +1,6 @@
 import { Telegraf } from 'telegraf';
 import { supabaseAdmin } from '../services/supabase.js';
-import { handleStart, handleVerificationMessage, pendingState } from './handlers/start.js';
+import { handleStart } from './handlers/start.js';
 import { extractInstagramUrl, handleSaveReel } from './handlers/saveReel.js';
 import {
   handlePlan, handleList, handleDelete, handleExport,
@@ -24,12 +24,13 @@ export function createBot() {
     return data;
   }
 
-  // ── Middleware: require linked account for most commands ────────────────────
+  // ── Middleware: require linked account ──────────────────────────────────────
   async function requireLinked(ctx, next) {
     const profile = await getLinkedProfile(ctx);
     if (!profile) {
+      const frontendUrl = process.env.FRONTEND_URL || 'https://reelvault-two.vercel.app';
       await ctx.reply(
-        '🔗 Your Telegram account is not connected to ReelVault.\n\nUse /start to link your account.'
+        `🔗 Your Telegram account is not connected to ReelVault yet.\n\nUse /start to get a one-click connect link.`
       );
       return;
     }
@@ -51,21 +52,20 @@ export function createBot() {
   // ── Inline keyboard callbacks ────────────────────────────────────────────────
   bot.action('export_all', async (ctx) => {
     const profile = await getLinkedProfile(ctx);
-    if (!profile) return ctx.answerCbQuery('Please link your account first.');
+    if (!profile) return ctx.answerCbQuery('Please connect your account first.');
     await handleExportAll(ctx, profile);
   });
 
   bot.action('export_by_cat', async (ctx) => {
     const profile = await getLinkedProfile(ctx);
-    if (!profile) return ctx.answerCbQuery('Please link your account first.');
+    if (!profile) return ctx.answerCbQuery('Please connect your account first.');
     await handleExportByCat(ctx, profile);
   });
 
   bot.action(/^export_cat:(.+)$/, async (ctx) => {
     const profile  = await getLinkedProfile(ctx);
-    if (!profile) return ctx.answerCbQuery('Please link your account first.');
-    const category = ctx.match[1];
-    await handleExportCategory(ctx, profile, category);
+    if (!profile) return ctx.answerCbQuery('Please connect your account first.');
+    await handleExportCategory(ctx, profile, ctx.match[1]);
   });
 
   bot.action('confirm_unlink', async (ctx) => {
@@ -78,27 +78,14 @@ export function createBot() {
 
   // ── Text messages ────────────────────────────────────────────────────────────
   bot.on('text', async (ctx) => {
-    const text       = ctx.message.text;
-    const telegramId = String(ctx.from.id);
-
-    // Check if we're in a verification flow
-    if (pendingState.has(telegramId)) {
-      return handleVerificationMessage(ctx, text);
-    }
-
-    // Check for Instagram URL
-    const url = extractInstagramUrl(text);
+    const url = extractInstagramUrl(ctx.message.text);
     if (url) {
       const profile = await getLinkedProfile(ctx);
       if (!profile) {
-        return ctx.reply(
-          '🔗 Please connect your ReelVault account first.\n\nUse /start to get started.'
-        );
+        return ctx.reply('🔗 Connect your ReelVault account first — use /start to get a one-click link.');
       }
       return handleSaveReel(ctx, url, profile);
     }
-
-    // Non-command, non-URL message
     return ctx.reply('Send me an Instagram reel or post link to save it to your ReelVault.');
   });
 

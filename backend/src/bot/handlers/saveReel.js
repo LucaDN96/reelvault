@@ -37,30 +37,22 @@ export async function handleSaveReel(ctx, url, userProfile) {
     .maybeSingle();
 
   if (existing) {
-    return ctx.reply(`ℹ️ This reel is already in your library under *${existing.category}*.`, { parse_mode: 'Markdown' });
+    return ctx.reply(`ℹ️ Already saved under *${existing.category}*.`, { parse_mode: 'Markdown' });
   }
 
-  // Show "saving" feedback
-  const statusMsg = await ctx.reply('⏳ Saving reel...');
+  // Fetch OG metadata + AI category in parallel
+  const [{ thumbnail, author, caption }, customCats] = await Promise.all([
+    fetchOgTags(url),
+    plan === 'pro'
+      ? supabaseAdmin.from('custom_categories').select('name').eq('user_id', userId)
+          .then(({ data }) => (data || []).map(c => c.name))
+      : Promise.resolve([])
+  ]);
 
-  // Fetch OG metadata
-  const { thumbnail, author, caption } = await fetchOgTags(url);
-
-  // Get custom categories if Pro
-  let customCategories = [];
-  if (plan === 'pro') {
-    const { data: cats } = await supabaseAdmin
-      .from('custom_categories')
-      .select('name')
-      .eq('user_id', userId);
-    customCategories = (cats || []).map(c => c.name);
-  }
-
-  // AI categorization
   let category = 'Other';
   let isCustom = false;
   try {
-    const result = await categorizeReel(caption, author, customCategories);
+    const result = await categorizeReel(caption, author, customCats);
     category = result.category;
     isCustom = result.isCustom;
   } catch (err) {
@@ -68,7 +60,7 @@ export async function handleSaveReel(ctx, url, userProfile) {
   }
 
   // Save to Supabase
-  const { data: reel, error } = await supabaseAdmin
+  const { error } = await supabaseAdmin
     .from('reels')
     .insert({
       user_id:           userId,
@@ -79,25 +71,12 @@ export async function handleSaveReel(ctx, url, userProfile) {
       category,
       is_custom_category: isCustom,
       date_saved:        new Date().toISOString()
-    })
-    .select()
-    .single();
+    });
 
   if (error) {
     console.error('Failed to save reel:', error);
-    await ctx.telegram.editMessageText(ctx.chat.id, statusMsg.message_id, null, '❌ Failed to save reel. Please try again.');
-    return;
+    return ctx.reply('❌ Failed to save. Please try again.');
   }
 
-  const captionPreview = caption ? caption.slice(0, 100) + (caption.length > 100 ? '…' : '') : '(no caption)';
-  const authorDisplay  = author || 'unknown';
-  const deepLink       = `${process.env.FRONTEND_URL}/app/reel/${reel.id}`;
-
-  await ctx.telegram.editMessageText(
-    ctx.chat.id,
-    statusMsg.message_id,
-    null,
-    `✅ *Saved!*\n\n👤 ${authorDisplay}\n📝 ${captionPreview}\n🏷️ Category: ${category}\n🔗 [Open in ReelVault](${deepLink})`,
-    { parse_mode: 'Markdown', disable_web_page_preview: true }
-  );
+  return ctx.reply(`✅ Saved! Category: *${category}*`, { parse_mode: 'Markdown' });
 }

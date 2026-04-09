@@ -2,10 +2,11 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 import { LanguageProvider } from './contexts/LanguageContext.jsx';
-import AuthScreen    from './screens/AuthScreen.jsx';
-import LibraryScreen from './screens/LibraryScreen.jsx';
-import DetailScreen  from './screens/DetailScreen.jsx';
-import SettingsScreen from './screens/SettingsScreen.jsx';
+import AuthScreen            from './screens/AuthScreen.jsx';
+import LibraryScreen         from './screens/LibraryScreen.jsx';
+import DetailScreen          from './screens/DetailScreen.jsx';
+import SettingsScreen        from './screens/SettingsScreen.jsx';
+import ConnectTelegramScreen from './screens/ConnectTelegramScreen.jsx';
 
 function AuthCallback() {
   const navigate = useNavigate();
@@ -44,6 +45,9 @@ function AppRoutes() {
       } />
       <Route path="/app/settings" element={
         <ProtectedRoute><SettingsScreen /></ProtectedRoute>
+      } />
+      <Route path="/connect" element={
+        <ProtectedRoute><ConnectTelegramScreen /></ProtectedRoute>
       } />
 
       <Route path="*" element={<Navigate to="/app" replace />} />

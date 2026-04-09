@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import { SUPPORTED_LANGUAGES } from '../i18n/index.js';
@@ -6,6 +7,8 @@ import { SUPPORTED_LANGUAGES } from '../i18n/index.js';
 export default function AuthScreen() {
   const { signIn }  = useAuth();
   const { lang, changeLang, t } = useLang();
+  const [searchParams] = useSearchParams();
+  const nextUrl = searchParams.get('next') || '/app';
   const [email, setEmail]       = useState('');
   const [sent, setSent]         = useState(false);
   const [loading, setLoading]   = useState(false);
@@ -17,7 +20,8 @@ export default function AuthScreen() {
     setLoading(true);
     setError('');
 
-    const { error: err } = await signIn(email.trim());
+    const redirectTo = `${window.location.origin}${nextUrl}`;
+    const { error: err } = await signIn(email.trim(), redirectTo);
     if (err) {
       setError(err.message || t('error_generic'));
     } else {

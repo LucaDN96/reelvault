@@ -52,6 +52,10 @@ export const api = {
     createCheckout: () => request('POST', '/stripe/create-checkout-session'),
     createPortal:   () => request('POST', '/stripe/create-portal-session')
   },
+  telegram: {
+    connect: (token) => request('POST',   '/auth/telegram/connect', { token }),
+    unlink:  ()      => request('DELETE', '/auth/telegram/connect')
+  },
   user: {
     // Check if Telegram is linked (polls the Supabase users table directly via anon key)
     async getProfile() {

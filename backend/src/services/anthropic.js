@@ -2,13 +2,13 @@ export const FIXED_CATEGORIES = ['Cooking', 'Design', 'Music', 'Travel', 'Sport'
 
 const KEYWORDS = {
   Cooking: ['food','recipe','cook','chef','eat','dinner','lunch','breakfast','pasta','pizza','cake','bake','kitchen','ingredient','meal','restaurant','taste','delicious','yummy'],
-  Design:  ['design','ui','ux','typography','font','color','brand','logo','creative','aesthetic','art','illustration','graphic','visual','layout','figma','sketch'],
+  Design:  ['design','ui','ux','typography','font','color','brand','logo','aesthetic','art','illustration','graphic','layout','figma','sketch'],
   Music:   ['music','song','guitar','piano','drum','bass','sing','singer','band','concert','track','beat','melody','rhythm','lyrics','album','dj','remix'],
   Travel:  ['travel','trip','vacation','flight','hotel','city','country','explore','adventure','beach','mountain','nature','destination','tourism','visit'],
   Sport:   ['sport','fitness','gym','workout','run','football','soccer','basketball','tennis','swim','yoga','training','exercise','athlete','game','match'],
   Humor:   ['funny','lol','laugh','joke','meme','comedy','hilarious','prank','fun','haha','humor','viral'],
   Fashion: ['fashion','style','outfit','clothes','wear','dress','shoes','bag','brand','luxury','trend','model','look','ootd'],
-  Tech:    ['tech','code','software','app','ai','programming','developer','startup','product','saas','web','mobile','javascript','python','data'],
+  Tech:    ['tech','code','software','app','ai','programming','developer','startup','product','saas','web','mobile','javascript','python','data','artificial intelligence','claude','chatgpt','llm','machine learning','neural','openai','anthropic','automation','robot','algorithm'],
 };
 
 /**

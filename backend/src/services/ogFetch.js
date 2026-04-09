@@ -74,6 +74,12 @@ export async function fetchOgTags(url) {
       }
     }
 
+    // og:description fallback: "764 likes, 17 comments - USERNAME on DATE: caption"
+    if (!author && ogDesc) {
+      const m = ogDesc.match(/\s-\s([\w.]+)\s+on\s+/i);
+      if (m) author = '@' + m[1];
+    }
+
     // ── Caption: prefer og:description, fall back to stripped og:title ────────
     let caption = ogDesc;
 

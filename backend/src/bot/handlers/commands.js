@@ -1,7 +1,6 @@
 import { Markup } from 'telegraf';
 import { supabaseAdmin } from '../../services/supabase.js';
 import { extractInstagramUrl } from './saveReel.js';
-import { pendingState } from './start.js';
 
 const CATEGORY_EMOJI = {
   Cooking: '🍳', Design: '🎨', Music: '🎵', Travel: '✈️',
@@ -227,7 +226,6 @@ export async function handleConfirmUnlink(ctx, profile) {
     .update({ telegram_id: null, telegram_linked: false })
     .eq('id', profile.id);
 
-  pendingState.delete(String(ctx.from.id));
   await ctx.editMessageText('✅ Your Telegram account has been unlinked from ReelVault.');
 }
 

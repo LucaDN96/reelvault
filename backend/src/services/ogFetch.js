@@ -1,15 +1,25 @@
 import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
 
-// Realistic desktop Chrome UA — Instagram serves richer meta tags to desktop browsers
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
+// Extracts username from URL if present.
+// instagram.com/USERNAME/reel/CODE  → USERNAME
+// instagram.com/reel/CODE           → null
+function usernameFromUrl(url) {
+  const m = url.match(/instagram\.com\/(?!reel\/|p\/|reels\/)([\w.]+)\/(reel|p)\//i);
+  return m ? '@' + m[1] : null;
+}
 
 /**
  * Fetch Open Graph metadata from an Instagram URL.
- * Note: Instagram aggressively blocks scrapers. Results may be incomplete.
- * Falls back to empty strings so the reel is still saved.
+ * Instagram blocks most server-side requests; results may be partial.
+ * Falls back gracefully so the reel is always saved.
  */
 export async function fetchOgTags(url) {
+  // Always try URL-based username first — it's reliable regardless of server response
+  const authorFromUrl = usernameFromUrl(url);
+
   try {
     const res = await fetch(url, {
       headers: {
@@ -27,7 +37,10 @@ export async function fetchOgTags(url) {
       signal: AbortSignal.timeout(10000)
     });
 
-    if (!res.ok) return fallback(url);
+    if (!res.ok) {
+      console.log(`[ogFetch] HTTP ${res.status} for ${url} — using URL-only fallback`);
+      return { thumbnail: '', author: authorFromUrl || '', caption: '' };
+    }
 
     const html = await res.text();
     const $    = cheerio.load(html);
@@ -36,43 +49,35 @@ export async function fetchOgTags(url) {
       $(`meta[property="og:${prop}"]`).attr('content') ||
       $(`meta[name="og:${prop}"]`).attr('content') || '';
 
-    const thumbnail  = og('image');
-    const rawTitle   = og('title') || $('title').text() || '';
-    const ogDesc     = og('description') || $('meta[name="description"]').attr('content') || '';
+    const thumbnail = og('image');
+    const rawTitle  = og('title') || $('title').text() || '';
+    const ogDesc    = og('description') || $('meta[name="description"]').attr('content') || '';
 
-    // ── Extract author ────────────────────────────────────────────────────────
-    // Instagram og:title formats:
-    //   "username on Instagram: "caption text""
-    //   "username (@handle) • Instagram photos and videos"
-    //   "@username"
-    let author = '';
+    // Debug — helps diagnose what Instagram actually returns
+    console.log(`[ogFetch] url=${url}`);
+    console.log(`[ogFetch] og:title="${rawTitle}"`);
+    console.log(`[ogFetch] og:description="${ogDesc.slice(0, 120)}${ogDesc.length > 120 ? '…' : ''}"`);
 
-    const titlePatterns = [
-      /^@?([\w.]+)\s+on\s+Instagram/i,           // "username on Instagram"
-      /^@?([\w.]+)\s*[•·]\s*Instagram/i,          // "username • Instagram"
-      /^@?([\w.]+)\s*\(@[\w.]+\)/i,               // "Name (@handle)"
-      /^([\w.]+)\s*:/,                             // "username: caption"
-    ];
+    // ── Author: URL first, then og:title patterns ─────────────────────────────
+    let author = authorFromUrl || '';
 
-    for (const pattern of titlePatterns) {
-      const m = rawTitle.match(pattern);
-      if (m) { author = '@' + m[1]; break; }
+    if (!author && rawTitle) {
+      const patterns = [
+        /^@?([\w.]+)\s+on\s+Instagram/i,
+        /^@?([\w.]+)\s*[•·]\s*Instagram/i,
+        /^@?([\w.]+)\s*\(@[\w.]+\)/i,
+        /^([\w.]+)\s*:/,
+      ];
+      for (const p of patterns) {
+        const m = rawTitle.match(p);
+        if (m) { author = '@' + m[1]; break; }
+      }
     }
 
-    // Fallback: extract username from the URL path
-    // instagram.com/username/reel/CODE or instagram.com/reel/CODE (no username)
-    if (!author) {
-      const urlMatch = url.match(/instagram\.com\/(?!reel\/|p\/)([\w.]+)\//i);
-      if (urlMatch) author = '@' + urlMatch[1];
-    }
-
-    // ── Extract caption ───────────────────────────────────────────────────────
-    // Prefer og:description (usually the full caption).
-    // Fall back to stripping the author prefix from og:title.
+    // ── Caption: prefer og:description, fall back to stripped og:title ────────
     let caption = ogDesc;
 
     if (!caption && rawTitle) {
-      // Strip "username on Instagram: " prefix and surrounding quotes
       caption = rawTitle
         .replace(/^@?[\w.]+\s+on\s+Instagram\s*:\s*/i, '')
         .replace(/^@?[\w.]+\s*[•·]\s*Instagram[^:]*:\s*/i, '')
@@ -82,13 +87,8 @@ export async function fetchOgTags(url) {
     }
 
     return { thumbnail, author, caption };
-  } catch {
-    return fallback(url);
+  } catch (err) {
+    console.log(`[ogFetch] fetch error for ${url}: ${err.message}`);
+    return { thumbnail: '', author: authorFromUrl || '', caption: '' };
   }
-}
-
-function fallback(url) {
-  // Last-resort author extraction from URL even on fetch failure
-  const urlMatch = url.match(/instagram\.com\/(?!reel\/|p\/)([\w.]+)\//i);
-  return { thumbnail: '', author: urlMatch ? '@' + urlMatch[1] : '', caption: '' };
 }

@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://reelvault-production.up.railway.app';
 
 async function getToken() {
   const { data: { session } } = await supabase.auth.getSession();

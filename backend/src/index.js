@@ -25,9 +25,10 @@ async function main() {
     // ── Webhook mode (Railway / any hosted environment) ──────────────────────
     app.use(bot.webhookCallback(webhookPath));
 
-    app.listen(PORT, () => {
-      console.log(`✅ Server running on port ${PORT} (webhook mode)`);
-    });
+    await new Promise(resolve => app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✅ Server running on 0.0.0.0:${PORT} (webhook mode)`);
+      resolve();
+    }));
 
     // Delete any existing webhook first to avoid 409 conflicts
     await bot.telegram.deleteWebhook();
@@ -35,9 +36,10 @@ async function main() {
     console.log(`✅ Telegram webhook set to ${backendUrl}${webhookPath}`);
   } else {
     // ── Local development only — no external URL available ───────────────────
-    app.listen(PORT, () => {
-      console.log(`✅ Server running on port ${PORT} (polling mode)`);
-    });
+    await new Promise(resolve => app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✅ Server running on 0.0.0.0:${PORT} (polling mode)`);
+      resolve();
+    }));
 
     await bot.telegram.deleteWebhook();
     await bot.launch();

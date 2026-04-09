@@ -11,7 +11,7 @@ export default {
   sort_newest: 'Più recenti',
   sort_oldest: 'Più vecchi',
   filter_all: 'Tutti',
-  empty_state: 'Nessun reel ancora. Invia un link Instagram a @ReelVaultBot su Telegram per iniziare.',
+  empty_state: 'Nessun reel ancora. Invia un link Instagram a @{botUsername} su Telegram per iniziare.',
   empty_filtered: 'Nessun reel in questa categoria.',
   free_banner: 'Hai {count}/30 reel salvati.',
   free_banner_upgrade: 'Passa a Pro per reel illimitati.',
@@ -44,7 +44,7 @@ export default {
   manage_sub: 'Gestisci abbonamento',
 
   telegram_not_linked: 'Collega Telegram',
-  telegram_step1: 'Apri @ReelVaultBot su Telegram',
+  telegram_step1: 'Apri @{botUsername} su Telegram',
   telegram_step2: 'Invia /start e segui le istruzioni',
   telegram_step3: 'Inserisci la tua email ReelVault quando richiesto',
   telegram_step4: 'Inserisci il codice di verifica inviato alla tua email',

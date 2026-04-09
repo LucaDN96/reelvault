@@ -5,7 +5,7 @@ import { api } from '../services/api.js';
 import { SUPPORTED_LANGUAGES } from '../i18n/index.js';
 import Header from '../components/Header.jsx';
 
-const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'ReelVaultBot';
+const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'ReelVault_official_bot';
 
 export default function SettingsScreen() {
   const { profile, signOut, refreshProfile } = useAuth();
@@ -164,7 +164,7 @@ export default function SettingsScreen() {
                   <span className="tg-step-num">{step}</span>
                   <span className="tg-step-text">
                     {step === 1
-                      ? <a href={`https://t.me/${BOT_USERNAME}`} target="_blank" rel="noopener noreferrer">{t('telegram_step1')}</a>
+                      ? <a href={`https://t.me/${BOT_USERNAME}`} target="_blank" rel="noopener noreferrer">{t('telegram_step1', { botUsername: BOT_USERNAME })}</a>
                       : t(`telegram_step${step}`)
                     }
                   </span>

@@ -7,6 +7,7 @@ import ReelCard from '../components/ReelCard.jsx';
 
 const FREE_REEL_LIMIT = 30;
 const FREE_BANNER_THRESHOLD = 20;
+const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'ReelVault_official_bot';
 
 export default function LibraryScreen() {
   const { profile } = useAuth();
@@ -94,7 +95,7 @@ export default function LibraryScreen() {
           <div className="center-message">{t('loading')}</div>
         ) : filtered.length === 0 ? (
           <div className="empty-state">
-            {activecat !== 'All' || search ? t('empty_filtered') : t('empty_state')}
+            {activecat !== 'All' || search ? t('empty_filtered') : t('empty_state', { botUsername: BOT_USERNAME })}
           </div>
         ) : (
           <div className="reel-grid">

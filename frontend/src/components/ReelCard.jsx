@@ -5,8 +5,6 @@ const CATEGORY_COLORS = {
 };
 
 export default function ReelCard({ reel, onClick }) {
-  const color = CATEGORY_COLORS[reel.category] || '#534AB7';
-
   return (
     <article className="reel-card" onClick={onClick}>
       <div className="reel-thumb-wrap">
@@ -15,12 +13,22 @@ export default function ReelCard({ reel, onClick }) {
           : <div className="reel-thumb-placeholder" />
         }
         <div className="reel-card-gradient" />
-        <div className="play-icon">▶</div>
+
+        {/* ⋯ icon — appears on hover via CSS */}
+        <div className="reel-card-menu">⋯</div>
+
+        {/* Author + category on bottom gradient */}
         <div className="reel-card-overlay">
           <span className="reel-author">{reel.author || 'Unknown'}</span>
           <span
             className="category-badge"
-            style={{ background: 'rgba(255,255,255,0.18)', color: '#fff', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.25)' }}
+            style={{
+              background: 'rgba(255,255,255,0.18)',
+              color: '#fff',
+              backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
+              border: '1px solid rgba(255,255,255,0.22)',
+            }}
           >
             {reel.category}
           </span>

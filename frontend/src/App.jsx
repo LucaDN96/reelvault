@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 import { LanguageProvider } from './contexts/LanguageContext.jsx';
+import { UserPrefsProvider } from './contexts/UserPrefsContext.jsx';
 import AuthScreen            from './screens/AuthScreen.jsx';
 import LibraryScreen         from './screens/LibraryScreen.jsx';
 import DetailScreen          from './screens/DetailScreen.jsx';
@@ -60,7 +61,9 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <LanguageProvider>
-          <AppRoutes />
+          <UserPrefsProvider>
+            <AppRoutes />
+          </UserPrefsProvider>
         </LanguageProvider>
       </AuthProvider>
     </BrowserRouter>

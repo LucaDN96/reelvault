@@ -2,15 +2,24 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import { SUPPORTED_LANGUAGES } from '../i18n/index.js';
 
-export default function Header({ showBack, showSettings = true }) {
+export default function Header({
+  showBack = false,
+  showSettings = true,
+  // Library passes these to put the search in the header center
+  search,
+  onSearchChange,
+  scrolled = false,
+}) {
   const navigate  = useNavigate();
   const location  = useLocation();
-  const { lang, changeLang } = useLang();
+  const { lang, changeLang, t } = useLang();
 
   const isSettings = location.pathname === '/app/settings';
+  const hasSearch  = onSearchChange !== undefined;
 
   return (
-    <header className="header">
+    <header className={`header ${scrolled ? 'header-scrolled' : ''}`}>
+      {/* Left */}
       <div className="header-left">
         {showBack ? (
           <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Back">
@@ -23,6 +32,25 @@ export default function Header({ showBack, showSettings = true }) {
         )}
       </div>
 
+      {/* Center — search pill (only on library) */}
+      {hasSearch && (
+        <div className="header-search">
+          <span className="header-search-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+            </svg>
+          </span>
+          <input
+            type="search"
+            className="header-search-input"
+            placeholder={t('search_placeholder')}
+            value={search}
+            onChange={e => onSearchChange(e.target.value)}
+          />
+        </div>
+      )}
+
+      {/* Right */}
       <div className="header-right">
         <div className="lang-switcher">
           {SUPPORTED_LANGUAGES.map(l => (

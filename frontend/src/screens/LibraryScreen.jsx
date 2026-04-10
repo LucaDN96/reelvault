@@ -1,22 +1,23 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
+import { useUserPrefs } from '../contexts/UserPrefsContext.jsx';
 import { api } from '../services/api.js';
 import { supabase } from '../services/supabase.js';
 import Header from '../components/Header.jsx';
 import ReelCard from '../components/ReelCard.jsx';
 import ReelModal from '../components/ReelModal.jsx';
 
-const FREE_REEL_LIMIT = 30;
 const FREE_BANNER_THRESHOLD = 20;
 const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'ReelVault_official_bot';
 
-// Skeleton heights — vary them so the masonry grid looks natural while loading
-const SKELETON_HEIGHTS = [280, 340, 260, 310, 250, 320];
+// Skeleton heights vary to make the masonry grid look natural while loading
+const SKELETON_HEIGHTS = [280, 360, 240, 310, 260, 340, 230, 290];
 
 export default function LibraryScreen() {
-  const { profile } = useAuth();
-  const { t } = useLang();
+  const { profile }              = useAuth();
+  const { t }                    = useLang();
+  const { hiddenCats }           = useUserPrefs();
 
   const [reels,        setReels]        = useState([]);
   const [categories,   setCategories]   = useState({ fixed: [], custom: [] });
@@ -25,9 +26,10 @@ export default function LibraryScreen() {
   const [activecat,    setActiveCat]    = useState('All');
   const [sort,         setSort]         = useState('newest');
   const [selectedReel, setSelectedReel] = useState(null);
-  const [toastKey,     setToastKey]     = useState(null); // store i18n key, resolve at render
+  const [toastKey,     setToastKey]     = useState(null);
+  const [scrolled,     setScrolled]     = useState(false);
 
-  // ── Initial load ────────────────────────────────────────────────────────
+  // ── Load ────────────────────────────────────────────────────────────────
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -42,10 +44,9 @@ export default function LibraryScreen() {
     load();
   }, [sort]);
 
-  // ── Supabase Realtime — subscribe to new reels for this user ────────────
+  // ── Realtime: prepend new reels as they arrive ───────────────────────────
   useEffect(() => {
     if (!profile?.id) return;
-
     let toastTimer;
     const channel = supabase
       .channel('library-inserts')
@@ -53,28 +54,29 @@ export default function LibraryScreen() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'reels', filter: `user_id=eq.${profile.id}` },
         (payload) => {
-          setReels(prev => {
-            // Avoid duplicates (e.g. if the same row arrives twice)
-            if (prev.some(r => r.id === payload.new.id)) return prev;
-            return [payload.new, ...prev];
-          });
+          setReels(prev => prev.some(r => r.id === payload.new.id) ? prev : [payload.new, ...prev]);
           setToastKey('new_reel_toast');
           clearTimeout(toastTimer);
           toastTimer = setTimeout(() => setToastKey(null), 3000);
         }
       )
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-      clearTimeout(toastTimer);
-    };
+    return () => { supabase.removeChannel(channel); clearTimeout(toastTimer); };
   }, [profile?.id]);
 
-  // ── Derived state ────────────────────────────────────────────────────────
+  // ── Derived ──────────────────────────────────────────────────────────────
   const allCategories = useMemo(() => {
-    return ['All', ...categories.fixed, ...(categories.custom || []).map(c => c.name)];
-  }, [categories]);
+    const visible = (categories.fixed || []).filter(c => !hiddenCats.includes(c));
+    const custom  = (categories.custom || []).map(c => c.name);
+    return ['All', ...visible, ...custom];
+  }, [categories, hiddenCats]);
+
+  // If activecat got hidden, reset to All
+  useEffect(() => {
+    if (activecat !== 'All' && !allCategories.includes(activecat)) {
+      setActiveCat('All');
+    }
+  }, [allCategories]);
 
   const filtered = useMemo(() => {
     let list = reels;
@@ -92,10 +94,7 @@ export default function LibraryScreen() {
   const showFreeBanner = profile?.plan === 'free' && reels.length > FREE_BANNER_THRESHOLD;
 
   // ── Modal callbacks ──────────────────────────────────────────────────────
-  function handleModalDelete(id) {
-    setReels(prev => prev.filter(r => r.id !== id));
-  }
-
+  function handleModalDelete(id) { setReels(prev => prev.filter(r => r.id !== id)); }
   function handleModalUpdate(updated) {
     setReels(prev => prev.map(r => r.id === updated.id ? updated : r));
     setSelectedReel(updated);
@@ -103,48 +102,38 @@ export default function LibraryScreen() {
 
   return (
     <div className="screen">
-      <Header />
+      <Header
+        search={search}
+        onSearchChange={setSearch}
+        scrolled={scrolled}
+      />
 
-      {/* Controls: search + category pills */}
+      {/* Category pills + sort */}
       <div className="library-controls">
-        <div className="search-wrap">
-          <span className="search-icon-inner">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-            </svg>
-          </span>
-          <input
-            type="search"
-            className="input search-input"
-            placeholder={t('search_placeholder')}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
+        <div className="category-pills">
+          {allCategories.map(cat => (
+            <button
+              key={cat}
+              className={`pill ${activecat === cat ? 'pill-active' : ''}`}
+              onClick={() => setActiveCat(cat)}
+            >
+              {cat === 'All' ? t('filter_all') : cat}
+            </button>
+          ))}
         </div>
-
-        <div className="filter-row">
-          <div className="category-pills">
-            {allCategories.map(cat => (
-              <button
-                key={cat}
-                className={`pill ${activecat === cat ? 'pill-active' : ''}`}
-                onClick={() => setActiveCat(cat)}
-              >
-                {cat === 'All' ? t('filter_all') : cat}
-              </button>
-            ))}
-          </div>
-          <button
-            className="sort-btn"
-            onClick={() => setSort(s => s === 'newest' ? 'oldest' : 'newest')}
-          >
-            {sort === 'newest' ? t('sort_newest') : t('sort_oldest')} ↕
-          </button>
-        </div>
+        <button
+          className="sort-btn"
+          onClick={() => setSort(s => s === 'newest' ? 'oldest' : 'newest')}
+        >
+          {sort === 'newest' ? t('sort_newest') : t('sort_oldest')} ↕
+        </button>
       </div>
 
       {/* Masonry grid */}
-      <div className="library-content">
+      <div
+        className="library-content"
+        onScroll={e => setScrolled(e.currentTarget.scrollTop > 4)}
+      >
         {loading ? (
           <div className="masonry-grid">
             {SKELETON_HEIGHTS.map((h, i) => (
@@ -155,15 +144,26 @@ export default function LibraryScreen() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">🎬</div>
-            {activecat !== 'All' || search.trim() ? (
-              <div className="empty-sub">{t('empty_filtered')}</div>
-            ) : (
+            <div className="empty-icon">📱</div>
+            <div className="empty-title">
+              {activecat !== 'All' || search.trim()
+                ? t('empty_filtered')
+                : t('empty_headline')}
+            </div>
+            {!activecat || activecat === 'All' && !search.trim() ? (
               <>
-                <div className="empty-title">No reels yet</div>
-                <div className="empty-sub">{t('empty_state', { botUsername: BOT_USERNAME })}</div>
+                <div className="empty-sub">{t('empty_sub', { botUsername: BOT_USERNAME })}</div>
+                <a
+                  href={`https://t.me/${BOT_USERNAME}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary"
+                  style={{ marginTop: 8 }}
+                >
+                  {t('empty_cta')}
+                </a>
               </>
-            )}
+            ) : null}
           </div>
         ) : (
           <div className="masonry-grid">
@@ -176,7 +176,6 @@ export default function LibraryScreen() {
         )}
       </div>
 
-      {/* Free plan banner */}
       {showFreeBanner && (
         <div className="free-banner">
           <span>{t('free_banner', { count: reels.length })}</span>
@@ -184,10 +183,8 @@ export default function LibraryScreen() {
         </div>
       )}
 
-      {/* Toast */}
       {toastKey && <div className="toast">{t(toastKey)}</div>}
 
-      {/* Detail modal */}
       {selectedReel && (
         <ReelModal
           reel={selectedReel}

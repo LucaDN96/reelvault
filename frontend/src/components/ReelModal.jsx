@@ -79,8 +79,9 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
     onClose();
   }
 
-  const color = CATEGORY_COLORS[reel.category] || '#534AB7';
+  const color        = CATEGORY_COLORS[reel.category] || '#534AB7';
   const isLongCaption = reel.caption && reel.caption.length > 200;
+  const isReelType    = !reel.media_type || reel.media_type === 'reel' || reel.media_type === 'unknown';
 
   return (
     <div
@@ -111,9 +112,15 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
           }
           <div className="modal-play-btn">
             <div className="modal-play-circle">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="rgba(255,255,255,0.95)">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
+              {isReelType ? (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="rgba(255,255,255,0.95)">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.95)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                </svg>
+              )}
             </div>
           </div>
         </a>
@@ -202,7 +209,7 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
               className="btn btn-primary"
               onClick={e => e.stopPropagation()}
             >
-              {t('open_instagram')}
+              {isReelType ? t('open_instagram') : t('open_instagram_post')}
             </a>
 
             {!confirmDelete ? (

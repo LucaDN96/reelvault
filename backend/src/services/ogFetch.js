@@ -11,14 +11,22 @@ function usernameFromUrl(url) {
   return m ? '@' + m[1] : null;
 }
 
+// Detect media type from URL path — reliable for standard Instagram URLs.
+function mediaTypeFromUrl(url) {
+  if (/instagram\.com\/reels?\//.test(url)) return 'reel';
+  if (/instagram\.com\/p\//.test(url)) return 'post';
+  return null; // unknown — fall through to OG detection
+}
+
 /**
  * Fetch Open Graph metadata from an Instagram URL.
  * Instagram blocks most server-side requests; results may be partial.
  * Falls back gracefully so the reel is always saved.
  */
 export async function fetchOgTags(url) {
-  // Always try URL-based username first — it's reliable regardless of server response
-  const authorFromUrl = usernameFromUrl(url);
+  // Always try URL-based username and media type first — reliable regardless of server response
+  const authorFromUrl  = usernameFromUrl(url);
+  const typeFromUrl    = mediaTypeFromUrl(url);
 
   try {
     const res = await fetch(url, {
@@ -39,7 +47,7 @@ export async function fetchOgTags(url) {
 
     if (!res.ok) {
       console.log(`[ogFetch] HTTP ${res.status} for ${url} — using URL-only fallback`);
-      return { thumbnail: '', author: authorFromUrl || '', caption: '' };
+      return { thumbnail: '', author: authorFromUrl || '', caption: '', media_type: typeFromUrl || 'unknown' };
     }
 
     const html = await res.text();
@@ -49,14 +57,17 @@ export async function fetchOgTags(url) {
       $(`meta[property="og:${prop}"]`).attr('content') ||
       $(`meta[name="og:${prop}"]`).attr('content') || '';
 
-    const thumbnail = og('image');
-    const rawTitle  = og('title') || $('title').text() || '';
-    const ogDesc    = og('description') || $('meta[name="description"]').attr('content') || '';
+    const thumbnail  = og('image');
+    const rawTitle   = og('title') || $('title').text() || '';
+    const ogDesc     = og('description') || $('meta[name="description"]').attr('content') || '';
+    const ogType     = og('type');
+    const hasOgVideo = !!$('meta[property="og:video"]').attr('content');
 
     // Debug — helps diagnose what Instagram actually returns
     console.log(`[ogFetch] url=${url}`);
     console.log(`[ogFetch] og:title="${rawTitle}"`);
     console.log(`[ogFetch] og:description="${ogDesc.slice(0, 120)}${ogDesc.length > 120 ? '…' : ''}"`);
+    console.log(`[ogFetch] og:type="${ogType}" og:video=${hasOgVideo}`);
 
     // ── Author: URL first, then og:title patterns ─────────────────────────────
     let author = authorFromUrl || '';
@@ -92,9 +103,17 @@ export async function fetchOgTags(url) {
         .trim();
     }
 
-    return { thumbnail, author, caption };
+    // Derive media_type: URL is authoritative; OG tags are a fallback for non-standard URLs
+    let media_type = typeFromUrl;
+    if (!media_type) {
+      if (hasOgVideo || ogType?.startsWith('video')) media_type = 'reel';
+      else if (ogType === 'article') media_type = 'post';
+      else media_type = 'unknown';
+    }
+
+    return { thumbnail, author, caption, media_type };
   } catch (err) {
     console.log(`[ogFetch] fetch error for ${url}: ${err.message}`);
-    return { thumbnail: '', author: authorFromUrl || '', caption: '' };
+    return { thumbnail: '', author: authorFromUrl || '', caption: '', media_type: typeFromUrl || 'unknown' };
   }
 }

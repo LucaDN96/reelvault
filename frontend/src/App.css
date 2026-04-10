@@ -472,6 +472,46 @@ a:hover { text-decoration: underline; }
 }
 .reel-card:hover .reel-card-menu { opacity: 1; }
 
+/* Media type badge — top-left emoji indicator */
+.card-type-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  font-size: 14px;
+  line-height: 1;
+  background: rgba(0,0,0,0.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Center play/photo icon */
+.card-center-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.reel-card:hover .card-center-icon { opacity: 1; }
+
 /* Fixed-height thumbnail — all cards are the same height */
 .reel-thumb-wrap {
   position: relative;

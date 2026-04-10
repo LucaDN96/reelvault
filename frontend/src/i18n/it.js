@@ -21,7 +21,8 @@ export default {
   free_banner_upgrade: 'Passa a Pro per reel illimitati.',
 
   // Detail
-  open_instagram: 'Apri in Instagram',
+  open_instagram: 'Apri il reel in Instagram',
+  open_instagram_post: 'Visualizza il post su Instagram',
   delete_reel: 'Elimina reel',
   delete_confirm: 'Eliminare questo reel?',
   delete_confirm_yes: 'Elimina',

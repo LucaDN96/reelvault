@@ -40,8 +40,8 @@ export async function handleSaveReel(ctx, url, userProfile) {
     return ctx.reply(`ℹ️ Already saved under *${existing.category}*.`, { parse_mode: 'Markdown' });
   }
 
-  // Fetch OG metadata + AI category in parallel
-  const [{ thumbnail, author, caption }, customCats] = await Promise.all([
+  // Fetch OG metadata + category in parallel
+  const [{ thumbnail, author, caption, media_type }, customCats] = await Promise.all([
     fetchOgTags(url),
     plan === 'pro'
       ? supabaseAdmin.from('custom_categories').select('name').eq('user_id', userId)
@@ -55,14 +55,15 @@ export async function handleSaveReel(ctx, url, userProfile) {
   const { error } = await supabaseAdmin
     .from('reels')
     .insert({
-      user_id:           userId,
+      user_id:            userId,
       url,
-      author:            author || '',
-      caption:           caption || '',
-      thumbnail:         thumbnail || '',
+      author:             author || '',
+      caption:            caption || '',
+      thumbnail:          thumbnail || '',
       category,
       is_custom_category: isCustom,
-      date_saved:        new Date().toISOString()
+      media_type:         media_type || 'unknown',
+      date_saved:         new Date().toISOString()
     });
 
   if (error) {
@@ -70,5 +71,6 @@ export async function handleSaveReel(ctx, url, userProfile) {
     return ctx.reply('❌ Failed to save. Please try again.');
   }
 
-  return ctx.reply(`✅ Saved! Category: *${category}*`, { parse_mode: 'Markdown' });
+  const mediaLabel = media_type === 'post' ? '📷 Post' : '🎬 Reel';
+  return ctx.reply(`✅ ${mediaLabel} saved! Category: *${category}*`, { parse_mode: 'Markdown' });
 }

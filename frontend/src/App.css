@@ -608,50 +608,6 @@ a:hover { text-decoration: underline; }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* oEmbed container */
-.modal-embed-wrap {
-  width: 100%;
-  background: var(--surface2);
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  /* Let Instagram's iframe determine its own height */
-}
-.modal-embed-inner {
-  width: 100%;
-  max-width: 100%;
-}
-/* Force the blockquote to fill the container width */
-.modal-embed-inner .instagram-media {
-  min-width: 0 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-}
-
-/* Loading spinner */
-.modal-embed-loading {
-  width: 100%;
-  aspect-ratio: 4/3;
-  background: var(--surface2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.embed-spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--border);
-  border-top-color: var(--purple);
-  border-radius: 50%;
-  animation: embed-spin 0.75s linear infinite;
-}
-@keyframes embed-spin {
-  to { transform: rotate(360deg); }
-}
-
 /* Drag handle */
 .modal-handle {
   width: 36px;

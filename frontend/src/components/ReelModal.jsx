@@ -9,21 +9,6 @@ const CATEGORY_COLORS = {
   Fashion: '#e91e8c', Tech: '#534AB7', Other: '#7f8c8d'
 };
 
-// Injects embed.js once, or calls process() if already loaded.
-function initInstagramEmbed() {
-  if (window.instgrm?.Embeds) {
-    window.instgrm.Embeds.process();
-    return;
-  }
-  if (!document.querySelector('script[src*="instagram.com/embed.js"]')) {
-    const script = document.createElement('script');
-    script.src = 'https://www.instagram.com/embed.js';
-    script.async = true;
-    document.head.appendChild(script);
-    // embed.js calls process() automatically on load
-  }
-}
-
 export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpdate }) {
   const { profile } = useAuth();
   const { t } = useLang();
@@ -35,35 +20,11 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
   const [confirmDelete,   setConfirmDelete]   = useState(false);
   const [newCatMode,      setNewCatMode]      = useState(false);
   const [newCatName,      setNewCatName]      = useState('');
-
-  // oEmbed state: null = loading, '' = failed (show fallback), string = html
-  const [embedHtml,    setEmbedHtml]    = useState(null);
-  const [embedFailed,  setEmbedFailed]  = useState(false);
-
   const noteSaveTimer = useRef(null);
 
-  // Fetch categories
   useEffect(() => {
     api.categories.list().then(setCategories);
   }, []);
-
-  // Fetch oEmbed HTML
-  useEffect(() => {
-    let cancelled = false;
-    api.reels.oembed(reel.url)
-      .then(data => {
-        if (!cancelled) setEmbedHtml(data.html);
-      })
-      .catch(() => {
-        if (!cancelled) setEmbedFailed(true);
-      });
-    return () => { cancelled = true; };
-  }, [reel.url]);
-
-  // Initialize Instagram embed script after HTML is injected
-  useEffect(() => {
-    if (embedHtml) initInstagramEmbed();
-  }, [embedHtml]);
 
   // Lock body scroll
   useEffect(() => {
@@ -120,7 +81,6 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
 
   const color = CATEGORY_COLORS[reel.category] || '#534AB7';
   const isLongCaption = reel.caption && reel.caption.length > 200;
-  const showFallback = embedFailed || embedHtml === null && false; // null = still loading
 
   return (
     <div
@@ -137,44 +97,28 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
           </svg>
         </button>
 
-        {/* ── Media area: oEmbed → fallback thumbnail ─────────────────────── */}
-        {embedHtml ? (
-          // Instagram oEmbed embed
-          <div className="modal-embed-wrap">
-            <div
-              className="modal-embed-inner"
-              dangerouslySetInnerHTML={{ __html: embedHtml }}
-            />
-          </div>
-        ) : embedFailed ? (
-          // Fallback: static thumbnail with play button
-          <a
-            href={reel.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="modal-thumb-wrap"
-            onClick={e => e.stopPropagation()}
-          >
-            {reel.thumbnail
-              ? <img src={reel.thumbnail} alt="" className="modal-thumb" />
-              : <div className="modal-thumb-placeholder" />
-            }
-            <div className="modal-play-btn">
-              <div className="modal-play-circle">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="rgba(255,255,255,0.95)">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-              </div>
+        {/* Thumbnail — tap anywhere to open in Instagram */}
+        <a
+          href={reel.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="modal-thumb-wrap"
+          onClick={e => e.stopPropagation()}
+        >
+          {reel.thumbnail
+            ? <img src={reel.thumbnail} alt="" className="modal-thumb" />
+            : <div className="modal-thumb-placeholder" />
+          }
+          <div className="modal-play-btn">
+            <div className="modal-play-circle">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="rgba(255,255,255,0.95)">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
             </div>
-          </a>
-        ) : (
-          // Loading spinner
-          <div className="modal-embed-loading">
-            <div className="embed-spinner" />
           </div>
-        )}
+        </a>
 
-        {/* ── Scrollable content ──────────────────────────────────────────── */}
+        {/* Scrollable content */}
         <div className="modal-body">
 
           {/* Meta */}

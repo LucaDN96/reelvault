@@ -7,6 +7,7 @@ export default {
   auth_sending: 'Sending…',
 
   // Library
+  new_reel_toast: 'New reel added ✨',
   search_placeholder: 'Search reels…',
   sort_newest: 'Newest',
   sort_oldest: 'Oldest',

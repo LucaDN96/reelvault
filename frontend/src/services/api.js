@@ -33,6 +33,7 @@ export const api = {
       const qs = new URLSearchParams(params).toString();
       return request('GET', `/reels${qs ? '?' + qs : ''}`);
     },
+    oembed: (url)      => request('GET', `/reels/oembed?url=${encodeURIComponent(url)}`),
     update: (id, body) => request('PATCH', `/reels/${id}`, body),
     delete: (id)       => request('DELETE', `/reels/${id}`)
   },

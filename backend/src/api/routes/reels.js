@@ -5,6 +5,40 @@ const router = Router();
 
 const FREE_REEL_LIMIT = 30;
 
+// GET /reels/oembed?url=INSTAGRAM_URL
+// Proxies the Instagram oEmbed API server-side so credentials stay out of the browser.
+router.get('/oembed', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: 'url is required' });
+
+  const appId     = process.env.FACEBOOK_APP_ID;
+  const appSecret = process.env.FACEBOOK_APP_SECRET;
+  if (!appId || !appSecret) {
+    return res.status(503).json({ error: 'oEmbed not configured' });
+  }
+
+  try {
+    const oembedUrl = new URL('https://graph.facebook.com/v18.0/instagram_oembed');
+    oembedUrl.searchParams.set('url', url);
+    oembedUrl.searchParams.set('access_token', `${appId}|${appSecret}`);
+    oembedUrl.searchParams.set('omit_script', 'true'); // we inject embed.js ourselves
+    oembedUrl.searchParams.set('fields', 'html,thumbnail_url,author_name');
+
+    const response = await fetch(oembedUrl.toString());
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      console.log(`[oembed] API error ${response.status}:`, body?.error?.message || '');
+      return res.status(response.status).json({ error: body?.error?.message || 'oEmbed request failed' });
+    }
+
+    const data = await response.json();
+    res.json({ html: data.html });
+  } catch (err) {
+    console.error('[oembed] fetch error:', err.message);
+    res.status(500).json({ error: 'oEmbed fetch failed' });
+  }
+});
+
 // GET /reels
 router.get('/', async (req, res) => {
   const userId = req.userProfile.id;

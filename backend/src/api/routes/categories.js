@@ -9,27 +9,19 @@ router.get('/', async (req, res) => {
   const userId = req.userProfile.id;
   const plan   = req.userProfile.plan;
 
-  let custom = [];
-  if (plan === 'pro') {
-    const { data, error } = await supabaseAdmin
-      .from('custom_categories')
-      .select('*')
-      .eq('user_id', userId)
-      .order('name');
+  const { data, error } = await supabaseAdmin
+    .from('custom_categories')
+    .select('*')
+    .eq('user_id', userId)
+    .order('name');
 
-    if (error) return res.status(500).json({ error: error.message });
-    custom = data;
-  }
+  if (error) return res.status(500).json({ error: error.message });
 
-  res.json({ fixed: FIXED_CATEGORIES, custom });
+  res.json({ fixed: FIXED_CATEGORIES, custom: data });
 });
 
-// POST /categories — Pro only
+// POST /categories
 router.post('/', async (req, res) => {
-  if (req.userProfile.plan !== 'pro') {
-    return res.status(403).json({ error: 'Custom categories require Pro plan.' });
-  }
-
   const userId = req.userProfile.id;
   const { name } = req.body;
 
@@ -49,12 +41,8 @@ router.post('/', async (req, res) => {
   res.status(201).json(data);
 });
 
-// DELETE /categories/:id — Pro only
+// DELETE /categories/:id
 router.delete('/:id', async (req, res) => {
-  if (req.userProfile.plan !== 'pro') {
-    return res.status(403).json({ error: 'Custom categories require Pro plan.' });
-  }
-
   const userId = req.userProfile.id;
   const { id } = req.params;
 

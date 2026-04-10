@@ -91,7 +91,6 @@ router.post('/', async (req, res) => {
 // PATCH /reels/:id
 router.patch('/:id', async (req, res) => {
   const userId = req.userProfile.id;
-  const plan   = req.userProfile.plan;
   const { id } = req.params;
   const { category, note, is_custom_category } = req.body;
 
@@ -104,11 +103,6 @@ router.patch('/:id', async (req, res) => {
     .maybeSingle();
 
   if (!reel) return res.status(404).json({ error: 'Reel not found' });
-
-  // Custom categories require Pro
-  if (is_custom_category && plan !== 'pro') {
-    return res.status(403).json({ error: 'Custom categories require Pro plan.' });
-  }
 
   const updates = {};
   if (category !== undefined)           updates.category           = category;

@@ -208,35 +208,27 @@ export default function SettingsScreen() {
               </div>
             )}
 
-            {isPro ? (
-              newCatMode ? (
-                <div className="new-cat-row">
-                  <input
-                    className="input"
-                    placeholder={t('new_category_placeholder')}
-                    value={newCatName}
-                    onChange={e => setNewCatName(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
-                    autoFocus
-                  />
-                  <button className="btn btn-primary btn-sm" onClick={handleAddCategory} disabled={loading.addCat}>
-                    {loading.addCat ? '…' : t('category_add')}
-                  </button>
-                  <button className="btn btn-ghost btn-sm" onClick={() => { setNewCatMode(false); setNewCatName(''); }}>
-                    ✕
-                  </button>
-                </div>
-              ) : (
-                <button className="btn btn-ghost btn-sm" onClick={() => setNewCatMode(true)}>
-                  + {t('new_category')}
+            {newCatMode ? (
+              <div className="new-cat-row">
+                <input
+                  className="input"
+                  placeholder={t('new_category_placeholder')}
+                  value={newCatName}
+                  onChange={e => setNewCatName(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
+                  autoFocus
+                />
+                <button className="btn btn-primary btn-sm" onClick={handleAddCategory} disabled={loading.addCat}>
+                  {loading.addCat ? '…' : t('category_add')}
                 </button>
-              )
-            ) : (
-              <div className="pro-locked">
-                <span className="lock-icon">🔒</span>
-                <span>{t('custom_categories_pro_locked')}</span>
-                <button className="btn btn-primary btn-sm" onClick={handleUpgrade}>{t('upgrade_prompt')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => { setNewCatMode(false); setNewCatName(''); }}>
+                  ✕
+                </button>
               </div>
+            ) : (
+              <button className="btn btn-ghost btn-sm" onClick={() => setNewCatMode(true)}>
+                + {t('new_category')}
+              </button>
             )}
           </div>
         </section>

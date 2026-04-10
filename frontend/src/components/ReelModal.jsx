@@ -173,9 +173,7 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
                 {(categories.custom || []).map(c => (
                   <option key={c.id} value={c.name}>{c.name}</option>
                 ))}
-                {profile?.plan === 'pro' && (
-                  <option value="__new__">{t('add_custom_category')}</option>
-                )}
+                <option value="__new__">{t('add_custom_category')}</option>
               </select>
             )}
           </div>

@@ -11,8 +11,7 @@ import ReelModal from '../components/ReelModal.jsx';
 const FREE_BANNER_THRESHOLD = 20;
 const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'ReelVault_official_bot';
 
-// Skeleton heights vary to make the masonry grid look natural while loading
-const SKELETON_HEIGHTS = [280, 360, 240, 310, 260, 340, 230, 290];
+const SKELETON_COUNT = 8;
 
 export default function LibraryScreen() {
   const { profile }              = useAuth();
@@ -136,9 +135,9 @@ export default function LibraryScreen() {
       >
         {loading ? (
           <div className="masonry-grid">
-            {SKELETON_HEIGHTS.map((h, i) => (
+            {Array.from({ length: SKELETON_COUNT }, (_, i) => (
               <div key={i} className="masonry-item skeleton-card">
-                <div className="skeleton-thumb" style={{ height: h }} />
+                <div className="skeleton-thumb" />
               </div>
             ))}
           </div>

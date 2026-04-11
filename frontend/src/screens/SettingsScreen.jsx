@@ -6,7 +6,8 @@ import { api } from '../services/api.js';
 import { SUPPORTED_LANGUAGES } from '../i18n/index.js';
 import Header from '../components/Header.jsx';
 
-const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'ReelVault_official_bot';
+const BOT_USERNAME  = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'ReelVault_official_bot';
+const BACKEND_URL   = import.meta.env.VITE_BACKEND_URL || 'https://reelvault-production.up.railway.app';
 
 export default function SettingsScreen() {
   const { profile, signOut, refreshProfile } = useAuth();
@@ -20,16 +21,12 @@ export default function SettingsScreen() {
   const [shortcutToken,    setShortcutToken]     = useState(null);
   const [tokenVisible,     setTokenVisible]      = useState(false);
   const [tokenCopied,      setTokenCopied]       = useState(false);
-  const [shortcutInstallUrl, setShortcutInstallUrl] = useState('https://www.icloud.com/shortcuts/placeholder');
 
   const fileRef = useRef(null);
 
   useEffect(() => {
     api.shortcuts.getToken()
-      .then(({ token, shortcut_install_url }) => {
-        setShortcutToken(token);
-        if (shortcut_install_url) setShortcutInstallUrl(shortcut_install_url);
-      })
+      .then(({ token }) => setShortcutToken(token))
       .catch(() => {}); // non-critical — fail silently
   }, []);
 
@@ -249,14 +246,15 @@ export default function SettingsScreen() {
 
           {/* Install button */}
           <a
-            href={shortcutInstallUrl}
+            href={shortcutToken ? `${BACKEND_URL}/shortcuts/download?token=${shortcutToken}` : '#'}
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-primary"
-            style={{ textDecoration: 'none', marginTop: 4 }}
+            style={{ textDecoration: 'none', marginTop: 4, opacity: shortcutToken ? 1 : 0.5, pointerEvents: shortcutToken ? 'auto' : 'none' }}
           >
             {t('ios_shortcut_install')}
           </a>
+          <p className="hint-text" style={{ marginTop: 6 }}>{t('ios_shortcut_install_hint')}</p>
         </section>
 
         {/* ── Data ─────────────────────────────────────────────────────────── */}

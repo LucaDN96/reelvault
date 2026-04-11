@@ -63,7 +63,8 @@ export default {
   ios_shortcut_token_label:'Il tuo token personale',
   ios_shortcut_copy:       'Copia token',
   ios_shortcut_copied:     'Copiato!',
-  ios_shortcut_install:    'Installa Scorciatoia',
+  ios_shortcut_install:      'Installa Scorciatoia',
+  ios_shortcut_install_hint: 'Tocca Installa Scorciatoia → iOS chiederà conferma → tocca Aggiungi Scorciatoia',
 
   // Settings
   settings_title: 'Impostazioni',

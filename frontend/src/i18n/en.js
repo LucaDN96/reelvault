@@ -63,7 +63,8 @@ export default {
   ios_shortcut_token_label:'Your personal token',
   ios_shortcut_copy:       'Copy token',
   ios_shortcut_copied:     'Copied!',
-  ios_shortcut_install:    'Install Shortcut',
+  ios_shortcut_install:      'Install Shortcut',
+  ios_shortcut_install_hint: 'Tap Install Shortcut → iOS will ask to add it → tap Add Shortcut',
 
   // Settings
   settings_title: 'Settings',

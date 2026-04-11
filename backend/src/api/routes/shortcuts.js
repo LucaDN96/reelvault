@@ -1,5 +1,6 @@
 import { Router }       from 'express';
-import { randomBytes }  from 'crypto';
+import { randomBytes, randomUUID } from 'crypto';
+import plist             from 'plist';
 import { supabaseAdmin } from '../../services/supabase.js';
 import { fetchOgTags }   from '../../services/ogFetch.js';
 import { categorizeReel } from '../../services/anthropic.js';
@@ -127,6 +128,138 @@ router.get('/categories', async (req, res) => {
     : [];
 
   res.json([...FIXED_CATEGORIES, ...customCats]);
+});
+
+// ── GET /shortcuts/download?token=TOKEN (public) ─────────────────────────────
+// Returns a pre-configured .shortcut file for the given token.
+router.get('/download', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).json({ error: 'token is required' });
+
+  const { data: user } = await supabaseAdmin
+    .from('users')
+    .select('id')
+    .eq('shortcut_token', token)
+    .maybeSingle();
+
+  if (!user) return res.status(401).json({ error: 'invalid_token' });
+
+  const backendUrl = (process.env.BACKEND_URL || 'https://reelvault-production.up.railway.app').replace(/\/$/, '');
+
+  const getCatsUUID    = randomUUID().toUpperCase();
+  const chooseUUID     = randomUUID().toUpperCase();
+  const saveUUID       = randomUUID().toUpperCase();
+
+  const workflow = {
+    WFWorkflowMinimumClientVersion: 900,
+    WFWorkflowMinimumClientVersionString: '900',
+    WFWorkflowName: 'Save to ReelVault',
+    WFWorkflowInputContentItemClasses: ['WFURLContentItem'],
+    WFWorkflowTypes: ['ActionExtension'],
+    WFWorkflowActions: [
+      // 1. GET /shortcuts/categories to populate picker
+      {
+        WFWorkflowActionIdentifier: 'is.workflow.actions.downloadurl',
+        WFWorkflowActionParameters: {
+          UUID: getCatsUUID,
+          WFURL: `${backendUrl}/shortcuts/categories?token=${token}`,
+          WFHTTPMethod: 'GET',
+        },
+      },
+      // 2. Choose category from returned list
+      {
+        WFWorkflowActionIdentifier: 'is.workflow.actions.choosefrominput',
+        WFWorkflowActionParameters: {
+          UUID: chooseUUID,
+          WFChooseFromListActionPrompt: 'Choose Category',
+          WFInput: {
+            Value: {
+              attachmentsByRange: {
+                '{0, 1}': {
+                  Type: 'ActionOutput',
+                  OutputName: 'Contents of URL',
+                  OutputUUID: getCatsUUID,
+                  Aggrandizements: [],
+                },
+              },
+              string: '\uFFFC',
+            },
+            WFSerializationType: 'WFTextTokenString',
+          },
+        },
+      },
+      // 3. POST /shortcuts/save with url + token + category
+      {
+        WFWorkflowActionIdentifier: 'is.workflow.actions.downloadurl',
+        WFWorkflowActionParameters: {
+          UUID: saveUUID,
+          WFURL: `${backendUrl}/shortcuts/save`,
+          WFHTTPMethod: 'POST',
+          WFHTTPBodyType: 'json',
+          WFHTTPRequestJSONValues: {
+            Value: {
+              WFDictionaryFieldValueItems: [
+                {
+                  WFItemType: 0,
+                  WFKey: { Value: { string: 'url' }, WFSerializationType: 'WFTextTokenString' },
+                  WFValue: {
+                    Value: {
+                      attachmentsByRange: {
+                        '{0, 1}': { Type: 'ExtensionInput', Aggrandizements: [] },
+                      },
+                      string: '\uFFFC',
+                    },
+                    WFSerializationType: 'WFTextTokenString',
+                  },
+                },
+                {
+                  WFItemType: 0,
+                  WFKey: { Value: { string: 'shortcut_token' }, WFSerializationType: 'WFTextTokenString' },
+                  WFValue: {
+                    Value: { string: token },
+                    WFSerializationType: 'WFTextTokenString',
+                  },
+                },
+                {
+                  WFItemType: 0,
+                  WFKey: { Value: { string: 'category' }, WFSerializationType: 'WFTextTokenString' },
+                  WFValue: {
+                    Value: {
+                      attachmentsByRange: {
+                        '{0, 1}': {
+                          Type: 'ActionOutput',
+                          OutputName: 'Chosen Item',
+                          OutputUUID: chooseUUID,
+                          Aggrandizements: [],
+                        },
+                      },
+                      string: '\uFFFC',
+                    },
+                    WFSerializationType: 'WFTextTokenString',
+                  },
+                },
+              ],
+            },
+            WFSerializationType: 'WFDictionaryFieldValue',
+          },
+        },
+      },
+      // 4. Show result notification
+      {
+        WFWorkflowActionIdentifier: 'is.workflow.actions.notification',
+        WFWorkflowActionParameters: {
+          WFNotificationActionTitle: 'ReelVault',
+          WFNotificationActionBody: '✅ Saved to ReelVault!',
+          WFNotificationActionSound: true,
+        },
+      },
+    ],
+  };
+
+  const plistXml = plist.build(workflow);
+  res.setHeader('Content-Type', 'application/octet-stream');
+  res.setHeader('Content-Disposition', 'attachment; filename="ReelVault.shortcut"');
+  res.send(plistXml);
 });
 
 export default router;

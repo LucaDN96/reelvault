@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { supabaseAdmin } from '../../services/supabase.js';
+import { fetchOgTags } from '../../services/ogFetch.js';
+import { categorizeReel } from '../../services/anthropic.js';
 
 const router = Router();
 
@@ -35,7 +37,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const userId = req.userProfile.id;
   const plan   = req.userProfile.plan;
-  const { url, author, caption, thumbnail, category, is_custom_category, note } = req.body;
+  const { url, author, caption, thumbnail, category, is_custom_category, note, media_type } = req.body;
 
   if (!url) return res.status(400).json({ error: 'url is required' });
 
@@ -78,7 +80,66 @@ router.post('/', async (req, res) => {
       thumbnail:          thumbnail || '',
       category:           category || 'Other',
       is_custom_category: is_custom_category || false,
+      media_type:         media_type || 'unknown',
       note:               note || null,
+      date_saved:         new Date().toISOString()
+    })
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.status(201).json(data);
+});
+
+// POST /reels/from-url — save a reel by URL from the PWA (runs full fetch + categorize pipeline)
+router.post('/from-url', async (req, res) => {
+  const userId = req.userProfile.id;
+  const plan   = req.userProfile.plan;
+  const { url } = req.body;
+
+  if (!url) return res.status(400).json({ error: 'url is required' });
+  if (!/instagram\.com\/(reel|p|reels)\//i.test(url)) {
+    return res.status(400).json({ error: 'invalid_url', message: 'Please provide a valid Instagram reel or post URL.' });
+  }
+
+  if (plan === 'free') {
+    const { count } = await supabaseAdmin
+      .from('reels').select('id', { count: 'exact', head: true }).eq('user_id', userId);
+    if (count >= FREE_REEL_LIMIT) {
+      return res.status(403).json({
+        error: 'free_limit_reached',
+        message: `You've reached the free limit of ${FREE_REEL_LIMIT} reels.`,
+        upgrade_url: `${process.env.FRONTEND_URL}/app?upgrade=1`
+      });
+    }
+  }
+
+  const { data: existing } = await supabaseAdmin
+    .from('reels').select('id, category').eq('user_id', userId).eq('url', url).maybeSingle();
+  if (existing) {
+    return res.status(409).json({ error: 'duplicate', message: 'This reel is already in your library.' });
+  }
+
+  const [{ thumbnail, author, caption, media_type }, customCats] = await Promise.all([
+    fetchOgTags(url),
+    plan === 'pro'
+      ? supabaseAdmin.from('custom_categories').select('name').eq('user_id', userId)
+          .then(({ data }) => (data || []).map(c => c.name))
+      : Promise.resolve([])
+  ]);
+  const { category, isCustom } = categorizeReel(caption, author, customCats);
+
+  const { data, error } = await supabaseAdmin
+    .from('reels')
+    .insert({
+      user_id:            userId,
+      url,
+      author:             author || '',
+      caption:            caption || '',
+      thumbnail:          thumbnail || '',
+      category,
+      is_custom_category: isCustom,
+      media_type:         media_type || 'unknown',
       date_saved:         new Date().toISOString()
     })
     .select()

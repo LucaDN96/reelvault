@@ -1,50 +1,24 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
-import { useUserPrefs, FIXED_CATEGORIES } from '../contexts/UserPrefsContext.jsx';
+import { useUserPrefs } from '../contexts/UserPrefsContext.jsx';
 import { api } from '../services/api.js';
 import { SUPPORTED_LANGUAGES } from '../i18n/index.js';
 import Header from '../components/Header.jsx';
 
 const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'ReelVault_official_bot';
 
-// Eye / Eye-off icons
-function EyeIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-    </svg>
-  );
-}
-function EyeOffIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-      <line x1="1" y1="1" x2="23" y2="23"/>
-    </svg>
-  );
-}
-
 export default function SettingsScreen() {
   const { profile, signOut, refreshProfile } = useAuth();
   const { lang, changeLang, t }              = useLang();
-  const { theme, toggleTheme, hiddenCats, toggleHiddenCat } = useUserPrefs();
+  const { theme, toggleTheme } = useUserPrefs();
 
   const [checkingTelegram, setCheckingTelegram] = useState(false);
   const [exportCategory,   setExportCategory]   = useState('');
   const [importResult,     setImportResult]      = useState(null);
   const [loading,          setLoading]           = useState({});
 
-  // Categories section state
-  const [customCategories, setCustomCategories] = useState([]);
-  const [newCatMode,       setNewCatMode]        = useState(false);
-  const [newCatName,       setNewCatName]        = useState('');
-
   const fileRef = useRef(null);
-
-  useEffect(() => {
-    api.categories.list().then(data => setCustomCategories(data.custom || []));
-  }, []);
 
   function setLoad(key, val) { setLoading(prev => ({ ...prev, [key]: val })); }
 
@@ -98,24 +72,6 @@ export default function SettingsScreen() {
     e.target.value = '';
   }
 
-  // ── Custom categories ────────────────────────────────────────────────────
-  async function handleAddCategory() {
-    if (!newCatName.trim()) return;
-    setLoad('addCat', true);
-    try {
-      const created = await api.categories.create(newCatName.trim());
-      setCustomCategories(prev => [...prev, created]);
-      setNewCatName('');
-      setNewCatMode(false);
-    } catch (e) { alert(e.message); }
-    setLoad('addCat', false);
-  }
-  async function handleDeleteCategory(id) {
-    if (!confirm('Delete this category?')) return;
-    await api.categories.delete(id);
-    setCustomCategories(prev => prev.filter(c => c.id !== id));
-  }
-
   function today() { return new Date().toISOString().slice(0, 10); }
   function downloadJson(data, filename) {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -161,75 +117,6 @@ export default function SettingsScreen() {
             <button className="theme-toggle" onClick={toggleTheme}>
               {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
             </button>
-          </div>
-        </section>
-
-        {/* ── Categories ───────────────────────────────────────────────────── */}
-        <section className="settings-section">
-          <h2 className="settings-section-title">{t('categories_section')}</h2>
-          <p className="hint-text">{t('categories_hint')}</p>
-
-          {/* Fixed category visibility toggles */}
-          <div className="cat-toggle-list">
-            {FIXED_CATEGORIES.map(cat => (
-              <div key={cat} className="cat-toggle-row">
-                <span className="cat-toggle-name">{cat}</span>
-                <button
-                  className={`eye-btn ${hiddenCats.includes(cat) ? 'eye-hidden' : ''}`}
-                  onClick={() => toggleHiddenCat(cat)}
-                  title={hiddenCats.includes(cat) ? 'Show in filter bar' : 'Hide from filter bar'}
-                >
-                  {hiddenCats.includes(cat) ? <EyeOffIcon /> : <EyeIcon />}
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Custom categories — Pro only */}
-          <div style={{ marginTop: 8 }}>
-            <div className="settings-section-title" style={{ marginBottom: 8 }}>Custom categories</div>
-            {customCategories.length > 0 && (
-              <div className="cat-toggle-list" style={{ marginBottom: 10 }}>
-                {customCategories.map(cat => (
-                  <div key={cat.id} className="cat-toggle-row">
-                    <span className="cat-toggle-name">{cat.name}</span>
-                    <button
-                      className="eye-btn"
-                      style={{ color: 'var(--danger)' }}
-                      onClick={() => handleDeleteCategory(cat.id)}
-                      title="Delete category"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {newCatMode ? (
-              <div className="new-cat-row">
-                <input
-                  className="input"
-                  placeholder={t('new_category_placeholder')}
-                  value={newCatName}
-                  onChange={e => setNewCatName(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
-                  autoFocus
-                />
-                <button className="btn btn-primary btn-sm" onClick={handleAddCategory} disabled={loading.addCat}>
-                  {loading.addCat ? '…' : t('category_add')}
-                </button>
-                <button className="btn btn-ghost btn-sm" onClick={() => { setNewCatMode(false); setNewCatName(''); }}>
-                  ✕
-                </button>
-              </div>
-            ) : (
-              <button className="btn btn-ghost btn-sm" onClick={() => setNewCatMode(true)}>
-                + {t('new_category')}
-              </button>
-            )}
           </div>
         </section>
 

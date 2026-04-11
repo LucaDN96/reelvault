@@ -69,7 +69,11 @@ Supabase magic links redirect to `/auth/callback` which immediately navigates to
 
 ### Frontend UI architecture
 - **Theme / dark mode**: `UserPrefsContext` manages `theme` (light/dark) and `hiddenCats`. A synchronous IIFE in `main.jsx` reads `localStorage` and sets `data-theme` on `<html>` before React renders (prevents FOUC). CSS variables in `:root` / `[data-theme="dark"]` handle all colour switching.
-- **Library layout**: CSS `columns: 2/3/4` masonry. Cards have fixed height (320px mobile, 360px tablet+) with `object-fit: cover` thumbnails.
+- **Library layout**: vertical list of `ReelCard` items (`.reel-list` / `.reel-list-item`). Each card has a 90×90px thumbnail on the left and text on the right. No masonry grid.
+- **Library header**: `LibraryHeader.jsx` — wordmark + "X saved" subtitle + "✦ AI active" badge. Search icon expands to full-width input; closing resets the query.
+- **Bottom nav**: `BottomNav.jsx` — fixed at bottom. Library tab (`/app`), FAB (opens `AddReelSheet`), Categories tab (`/app/categories`).
+- **Add reel sheet**: `AddReelSheet.jsx` — modal bottom sheet accepting an Instagram URL; calls `POST /reels/from-url` which runs the full fetch + categorize pipeline.
+- **Categories screen**: `CategoriesScreen.jsx` — standalone screen at `/app/categories` with fixed-category eye toggles and custom category management (moved from Settings).
 - **Reel modal**: `ReelModal.jsx` — bottom sheet on mobile, centered on desktop. Thumbnail opens Instagram URL. Category and notes are editable inline. Propagates changes to LibraryScreen via `onUpdate` / `onDelete` callbacks.
 - **Realtime**: `LibraryScreen` subscribes to Supabase `postgres_changes` INSERT events filtered by `user_id`. New reels are prepended to the list and a toast i18n key is stored in state (resolved at render time so language changes don't require re-subscribing).
 - **Hidden categories**: stored in `localStorage` via `UserPrefsContext`. `LibraryScreen` filters `allCategories` memo and resets `activecat` to 'All' if it becomes hidden.

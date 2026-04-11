@@ -8,6 +8,8 @@ export default {
 
   // Library
   new_reel_toast: 'New reel added ✨',
+  saved_count: '{count} saved',
+  ai_active: 'AI active',
   search_placeholder: 'Search reels…',
   sort_newest: 'Newest',
   sort_oldest: 'Oldest',
@@ -32,6 +34,25 @@ export default {
   category_label: 'Category',
   add_custom_category: '+ Add custom category',
   new_category_placeholder: 'New category name',
+
+  // Add reel sheet
+  add_reel_title: 'Add a reel or post',
+  add_reel_placeholder: 'Paste Instagram URL…',
+  add_reel_save: 'Save',
+  add_reel_saving: 'Saving…',
+  add_reel_invalid: 'Please enter a valid Instagram reel or post URL.',
+  add_reel_duplicate: 'Already in your library.',
+  add_reel_limit: 'You\'ve reached the 30-reel free limit. Upgrade to Pro.',
+  add_reel_error: 'Failed to save. Check the URL and try again.',
+
+  // Bottom nav
+  nav_library: 'Library',
+  nav_categories: 'Categories',
+
+  // Categories screen
+  categories_title: 'Categories',
+  fixed_categories_section: 'Fixed categories',
+  custom_categories_section: 'Custom categories',
 
   // Settings
   settings_title: 'Settings',

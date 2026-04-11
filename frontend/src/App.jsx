@@ -7,6 +7,7 @@ import AuthScreen            from './screens/AuthScreen.jsx';
 import LibraryScreen         from './screens/LibraryScreen.jsx';
 import DetailScreen          from './screens/DetailScreen.jsx';
 import SettingsScreen        from './screens/SettingsScreen.jsx';
+import CategoriesScreen      from './screens/CategoriesScreen.jsx';
 import ConnectTelegramScreen from './screens/ConnectTelegramScreen.jsx';
 
 function AuthCallback() {
@@ -46,6 +47,9 @@ function AppRoutes() {
       } />
       <Route path="/app/settings" element={
         <ProtectedRoute><SettingsScreen /></ProtectedRoute>
+      } />
+      <Route path="/app/categories" element={
+        <ProtectedRoute><CategoriesScreen /></ProtectedRoute>
       } />
       <Route path="/connect" element={
         <ProtectedRoute><ConnectTelegramScreen /></ProtectedRoute>

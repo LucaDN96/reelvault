@@ -54,6 +54,11 @@ export const api = {
     connect: (token) => request('POST',   '/auth/telegram/connect', { token }),
     unlink:  ()      => request('DELETE', '/auth/telegram/connect')
   },
+  shortcuts: {
+    getToken:  ()                        => request('GET',  '/shortcuts/token'),
+    saveReel:  (url, shortcut_token, category) => request('POST', '/shortcuts/save', { url, shortcut_token, category }),
+    categories:(token)                   => request('GET',  `/shortcuts/categories?token=${encodeURIComponent(token)}`)
+  },
   user: {
     // Check if Telegram is linked (polls the Supabase users table directly via anon key)
     async getProfile() {

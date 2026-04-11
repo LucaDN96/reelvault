@@ -54,6 +54,17 @@ export default {
   fixed_categories_section: 'Categorie fisse',
   custom_categories_section: 'Categorie personalizzate',
 
+  // iOS Shortcut
+  ios_shortcut_section:    'Scorciatoia iOS',
+  ios_shortcut_tagline:    'Salva qualsiasi reel Instagram direttamente dal menu Condividi — senza Telegram.',
+  ios_shortcut_step1:      'Installa la scorciatoia sul tuo iPhone',
+  ios_shortcut_step2:      'Inserisci il tuo token personale quando richiesto',
+  ios_shortcut_step3:      'Condividi un reel da Instagram → tocca "Salva in ReelVault"',
+  ios_shortcut_token_label:'Il tuo token personale',
+  ios_shortcut_copy:       'Copia token',
+  ios_shortcut_copied:     'Copiato!',
+  ios_shortcut_install:    'Installa Scorciatoia',
+
   // Settings
   settings_title: 'Impostazioni',
   account_section: 'Account',

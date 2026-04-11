@@ -54,6 +54,17 @@ export default {
   fixed_categories_section: 'Fixed categories',
   custom_categories_section: 'Custom categories',
 
+  // iOS Shortcut
+  ios_shortcut_section:    'iOS Shortcut',
+  ios_shortcut_tagline:    'Save any Instagram reel directly from the Share menu — no Telegram needed.',
+  ios_shortcut_step1:      'Install the shortcut on your iPhone',
+  ios_shortcut_step2:      'Enter your personal token when prompted',
+  ios_shortcut_step3:      'Share any reel from Instagram → tap "Save to ReelVault"',
+  ios_shortcut_token_label:'Your personal token',
+  ios_shortcut_copy:       'Copy token',
+  ios_shortcut_copied:     'Copied!',
+  ios_shortcut_install:    'Install Shortcut',
+
   // Settings
   settings_title: 'Settings',
   account_section: 'Account',

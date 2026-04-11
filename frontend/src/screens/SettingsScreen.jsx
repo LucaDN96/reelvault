@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import { useUserPrefs } from '../contexts/UserPrefsContext.jsx';
@@ -17,8 +17,21 @@ export default function SettingsScreen() {
   const [exportCategory,   setExportCategory]   = useState('');
   const [importResult,     setImportResult]      = useState(null);
   const [loading,          setLoading]           = useState({});
+  const [shortcutToken,    setShortcutToken]     = useState(null);
+  const [tokenVisible,     setTokenVisible]      = useState(false);
+  const [tokenCopied,      setTokenCopied]       = useState(false);
+  const [shortcutInstallUrl, setShortcutInstallUrl] = useState('https://www.icloud.com/shortcuts/placeholder');
 
   const fileRef = useRef(null);
+
+  useEffect(() => {
+    api.shortcuts.getToken()
+      .then(({ token, shortcut_install_url }) => {
+        setShortcutToken(token);
+        if (shortcut_install_url) setShortcutInstallUrl(shortcut_install_url);
+      })
+      .catch(() => {}); // non-critical — fail silently
+  }, []);
 
   function setLoad(key, val) { setLoading(prev => ({ ...prev, [key]: val })); }
 
@@ -70,6 +83,15 @@ export default function SettingsScreen() {
     } catch (e) { alert(e.message); }
     setLoad('import', false);
     e.target.value = '';
+  }
+
+  async function handleCopyToken() {
+    if (!shortcutToken) return;
+    try {
+      await navigator.clipboard.writeText(shortcutToken);
+      setTokenCopied(true);
+      setTimeout(() => setTokenCopied(false), 2000);
+    } catch { /* clipboard unavailable */ }
   }
 
   function today() { return new Date().toISOString().slice(0, 10); }
@@ -172,6 +194,69 @@ export default function SettingsScreen() {
               </button>
             </div>
           )}
+        </section>
+
+        {/* ── iOS Shortcut ─────────────────────────────────────────────────── */}
+        <section className="settings-section">
+          <h2 className="settings-section-title">{t('ios_shortcut_section')}</h2>
+          <p className="hint-text">{t('ios_shortcut_tagline')}</p>
+
+          {/* Steps */}
+          <div className="shortcut-steps">
+            <div className="shortcut-step">
+              <span className="shortcut-step-num">1</span>
+              <span className="shortcut-step-text">{t('ios_shortcut_step1')}</span>
+            </div>
+            <div className="shortcut-step">
+              <span className="shortcut-step-num">2</span>
+              <span className="shortcut-step-text">{t('ios_shortcut_step2')}</span>
+            </div>
+            <div className="shortcut-step">
+              <span className="shortcut-step-num">3</span>
+              <span className="shortcut-step-text">{t('ios_shortcut_step3')}</span>
+            </div>
+          </div>
+
+          {/* Token field */}
+          <div style={{ marginTop: 4 }}>
+            <span className="settings-label" style={{ display: 'block', marginBottom: 6 }}>{t('ios_shortcut_token_label')}</span>
+            <div className="shortcut-token-row">
+              <code className="shortcut-token-value">
+                {shortcutToken
+                  ? (tokenVisible ? shortcutToken : '•'.repeat(shortcutToken.length))
+                  : '—'}
+              </code>
+              <button
+                className="icon-btn"
+                onClick={() => setTokenVisible(v => !v)}
+                aria-label={tokenVisible ? 'Hide token' : 'Show token'}
+                disabled={!shortcutToken}
+              >
+                {tokenVisible
+                  ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                  : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                }
+              </button>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={handleCopyToken}
+                disabled={!shortcutToken}
+              >
+                {tokenCopied ? t('ios_shortcut_copied') : t('ios_shortcut_copy')}
+              </button>
+            </div>
+          </div>
+
+          {/* Install button */}
+          <a
+            href={shortcutInstallUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+            style={{ textDecoration: 'none', marginTop: 4 }}
+          >
+            {t('ios_shortcut_install')}
+          </a>
         </section>
 
         {/* ── Data ─────────────────────────────────────────────────────────── */}

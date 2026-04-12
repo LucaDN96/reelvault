@@ -8,6 +8,9 @@ import LibraryScreen         from './screens/LibraryScreen.jsx';
 import DetailScreen          from './screens/DetailScreen.jsx';
 import SettingsScreen        from './screens/SettingsScreen.jsx';
 import CategoriesScreen      from './screens/CategoriesScreen.jsx';
+import CollectionsScreen     from './screens/CollectionsScreen.jsx';
+import CollectionDetailScreen from './screens/CollectionDetailScreen.jsx';
+import AcceptInviteScreen    from './screens/AcceptInviteScreen.jsx';
 import ConnectTelegramScreen from './screens/ConnectTelegramScreen.jsx';
 
 function AuthCallback() {
@@ -50,6 +53,15 @@ function AppRoutes() {
       } />
       <Route path="/app/categories" element={
         <ProtectedRoute><CategoriesScreen /></ProtectedRoute>
+      } />
+      <Route path="/app/collections" element={
+        <ProtectedRoute><CollectionsScreen /></ProtectedRoute>
+      } />
+      <Route path="/app/collections/accept" element={
+        <ProtectedRoute><AcceptInviteScreen /></ProtectedRoute>
+      } />
+      <Route path="/app/collections/:id" element={
+        <ProtectedRoute><CollectionDetailScreen /></ProtectedRoute>
       } />
       <Route path="/connect" element={
         <ProtectedRoute><ConnectTelegramScreen /></ProtectedRoute>

@@ -6,6 +6,7 @@ import exportImportRouter from './routes/exportImport.js';
 import stripeRouter, { stripeWebhookRouter } from './routes/stripe.js';
 import telegramRouter     from './routes/telegram.js';
 import shortcutsRouter    from './routes/shortcuts.js';
+import collectionsRouter  from './routes/collections.js';
 
 export function createApp() {
   const app = express();
@@ -47,6 +48,9 @@ export function createApp() {
 
   // Shortcuts: /token is auth-gated inside the router; /save and /categories are public
   app.use('/shortcuts', shortcutsRouter);
+
+  // Collections: /invite/:token and /invite/accept are public; rest is auth-gated inside
+  app.use('/collections', collectionsRouter);
 
   // ── Error handler ─────────────────────────────────────────────────────────
   app.use((err, _req, res, _next) => {

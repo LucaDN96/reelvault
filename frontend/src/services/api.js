@@ -54,6 +54,18 @@ export const api = {
     connect: (token) => request('POST',   '/auth/telegram/connect', { token }),
     unlink:  ()      => request('DELETE', '/auth/telegram/connect')
   },
+  collections: {
+    list:         ()                  => request('GET',    '/collections'),
+    create:       (name)              => request('POST',   '/collections', { name }),
+    get:          (id)                => request('GET',    `/collections/${id}`),
+    rename:       (id, name)          => request('PATCH',  `/collections/${id}`, { name }),
+    delete:       (id)                => request('DELETE', `/collections/${id}`),
+    addReel:      (id, reel_id)       => request('POST',   `/collections/${id}/reels`, { reel_id }),
+    removeReel:   (id, reelId)        => request('DELETE', `/collections/${id}/reels/${reelId}`),
+    invite:       (id, email)         => request('POST',   `/collections/${id}/invite`, { email }),
+    removeMember: (id, uid)           => request('DELETE', `/collections/${id}/members/${uid}`),
+    acceptInvite: (token)             => request('POST',   '/collections/invite/accept', { token })
+  },
   shortcuts: {
     getToken:  ()                        => request('GET',  '/shortcuts/token'),
     saveReel:  (url, shortcut_token, category) => request('POST', '/shortcuts/save', { url, shortcut_token, category }),

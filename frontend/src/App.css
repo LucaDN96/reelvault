@@ -1116,6 +1116,185 @@ a:hover { text-decoration: underline; }
 .connect-error { font-size: 14px; color: var(--danger); }
 .connect-card .btn { width: 100%; }
 
+/* ── Collections list ────────────────────────────────────────────────────── */
+.coll-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.coll-list-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s, transform 0.12s ease, box-shadow 0.12s ease;
+}
+.coll-list-item:hover  { transform: translateY(-1px); box-shadow: var(--shadow-elev); }
+.coll-list-item:active { transform: scale(0.99); }
+
+.coll-list-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.coll-list-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.coll-list-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.coll-list-owner {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.coll-list-chevron {
+  color: var(--text-faint);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Collection detail ───────────────────────────────────────────────────── */
+.coll-detail-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coll-detail-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.coll-detail-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.coll-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.coll-rename-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.coll-rename-row .input { flex: 1; padding: 8px 12px; }
+
+/* Member avatar stack */
+.coll-members-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.coll-avatar-stack {
+  display: flex;
+  flex-direction: row-reverse;
+}
+.coll-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--purple-dim);
+  color: var(--purple);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+  margin-left: -6px;
+  flex-shrink: 0;
+}
+.coll-avatar-stack .coll-avatar:last-child { margin-left: 0; }
+.coll-avatar-overflow {
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-size: 10px;
+}
+.coll-members-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Members expanded list */
+.coll-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+.coll-member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+.coll-member-email {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.coll-role-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple);
+  background: var(--purple-dim);
+  padding: 2px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+/* "Added by" label under each reel card in collection */
+.coll-added-by {
+  font-size: 11px;
+  color: var(--text-faint);
+  padding: 2px 12px 6px;
+  margin-top: -4px;
+}
+
 /* ── Utilities ───────────────────────────────────────────────────────────── */
 .mt-8  { margin-top: 8px; }
 .mt-12 { margin-top: 12px; }

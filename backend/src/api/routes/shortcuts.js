@@ -36,30 +36,42 @@ router.get('/token', requireAuth, async (req, res) => {
 // ── POST /shortcuts/save (public — authenticated by shortcut_token) ──────────
 // Called directly from the iOS Shortcut. Accepts { url, shortcut_token, category? }.
 router.post('/save', async (req, res) => {
+  console.log('[shortcuts/save] body:', JSON.stringify(req.body));
+
   const { url, shortcut_token, category } = req.body;
 
-  if (!shortcut_token) return res.status(400).json({ error: 'shortcut_token is required' });
-  if (!url)            return res.status(400).json({ error: 'url is required' });
+  if (!shortcut_token) {
+    console.log('[shortcuts/save] missing shortcut_token');
+    return res.status(400).json({ error: 'shortcut_token is required' });
+  }
+  if (!url) {
+    console.log('[shortcuts/save] missing url');
+    return res.status(400).json({ error: 'url is required' });
+  }
 
   // Identify user by token
-  const { data: user } = await supabaseAdmin
+  const { data: user, error: userError } = await supabaseAdmin
     .from('users')
     .select('id, plan')
     .eq('shortcut_token', shortcut_token)
     .maybeSingle();
+
+  console.log('[shortcuts/save] user lookup:', { user, userError });
 
   if (!user) return res.status(401).json({ error: 'invalid_token', message: 'Invalid shortcut token.' });
 
   const { id: userId, plan } = user;
 
   if (!/instagram\.com\/(reel|p|reels)\//i.test(url)) {
+    console.log('[shortcuts/save] invalid URL:', url);
     return res.status(400).json({ error: 'invalid_url', message: 'Please provide a valid Instagram URL.' });
   }
 
   // Free plan limit
-  if (plan === 'free') {
-    const { count } = await supabaseAdmin
+  if (plan !== 'pro') {
+    const { count, error: countError } = await supabaseAdmin
       .from('reels').select('id', { count: 'exact', head: true }).eq('user_id', userId);
+    console.log('[shortcuts/save] reel count:', { count, countError, plan });
     if (count >= FREE_REEL_LIMIT) {
       return res.status(403).json({ error: 'free_limit_reached', message: `Free limit of ${FREE_REEL_LIMIT} reels reached.` });
     }
@@ -69,10 +81,12 @@ router.post('/save', async (req, res) => {
   const { data: existing } = await supabaseAdmin
     .from('reels').select('id, category').eq('user_id', userId).eq('url', url).maybeSingle();
   if (existing) {
+    console.log('[shortcuts/save] duplicate reel:', url);
     return res.status(409).json({ error: 'duplicate', message: 'Already in your library.', category: existing.category });
   }
 
   // Fetch metadata + load custom categories in parallel
+  console.log('[shortcuts/save] fetching OG tags for:', url);
   const [{ thumbnail, author, caption, media_type }, customCats] = await Promise.all([
     fetchOgTags(url),
     plan === 'pro'
@@ -80,6 +94,7 @@ router.post('/save', async (req, res) => {
           .then(({ data }) => (data || []).map(c => c.name))
       : Promise.resolve([])
   ]);
+  console.log('[shortcuts/save] OG result:', { thumbnail: !!thumbnail, author, media_type, captionLen: caption?.length });
 
   // Use provided category if valid, otherwise auto-categorize
   let finalCategory, isCustom;
@@ -90,8 +105,9 @@ router.post('/save', async (req, res) => {
   } else {
     ({ category: finalCategory, isCustom } = categorizeReel(caption, author, customCats));
   }
+  console.log('[shortcuts/save] category:', { finalCategory, isCustom });
 
-  const { error } = await supabaseAdmin.from('reels').insert({
+  const insertPayload = {
     user_id:            userId,
     url,
     author:             author || '',
@@ -101,9 +117,18 @@ router.post('/save', async (req, res) => {
     is_custom_category: isCustom,
     media_type:         media_type || 'unknown',
     date_saved:         new Date().toISOString()
-  });
+  };
+  console.log('[shortcuts/save] inserting:', { ...insertPayload, url });
 
-  if (error) return res.status(500).json({ error: error.message });
+  const { data: inserted, error: insertError } = await supabaseAdmin
+    .from('reels')
+    .insert(insertPayload)
+    .select()
+    .single();
+
+  console.log('[shortcuts/save] insert result:', { inserted: !!inserted, insertError });
+
+  if (insertError) return res.status(500).json({ error: insertError.message, detail: insertError });
 
   res.json({ success: true, category: finalCategory, author, media_type: media_type || 'unknown' });
 });

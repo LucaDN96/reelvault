@@ -136,24 +136,62 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      padding: 20px 0;
-      transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s, padding 0.3s;
+      padding: 0;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s, box-shadow 0.3s;
       border-bottom: 1px solid transparent;
     }
     #navbar.scrolled {
-      background: rgba(255,255,255,0.88);
+      background: rgba(255,255,255,0.90);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border-color: var(--gray-300);
-      padding: 14px 0;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.08);
     }
-    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
-    .nav-logo { font-size: 18px; font-weight: 700; color: var(--black); text-decoration: none; letter-spacing: -0.5px; }
-    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
-    .nav-links a { font-size: 14px; color: var(--gray-500); text-decoration: none; transition: color 0.2s; }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .nav-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--black);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-logo::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0; right: 0;
+      height: 2px;
+      background: var(--purple);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+      border-radius: 2px;
+    }
+    .nav-logo:hover::after { transform: scaleX(1); }
+    .nav-logo .logo-spark { color: var(--purple); font-size: 16px; line-height: 1; }
+    .nav-links { display: flex; align-items: center; gap: 40px; list-style: none; }
+    .nav-links a { font-size: 15px; color: #444; text-decoration: none; transition: color 0.2s; }
     .nav-links a:hover { color: var(--black); }
-    .nav-cta { font-size: 14px; font-weight: 600; color: var(--purple); text-decoration: none; transition: opacity 0.2s; }
-    .nav-cta:hover { opacity: 0.75; }
+    .nav-cta {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--purple);
+      text-decoration: none;
+      padding: 8px 20px;
+      border-radius: 100px;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: #453da0; transform: translateY(-1px); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
     .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--black); transition: transform 0.25s, opacity 0.25s; }
     .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -684,7 +722,7 @@
       .hero-buttons { justify-content: center; }
       .hero-trust { justify-content: center; }
       .nav-links { display: none; }
-      .nav-cta { display: none; }
+      .nav-cta { display: none !important; }
       .nav-hamburger { display: flex; }
 
       .stat-number { font-size: 48px; }
@@ -704,7 +742,7 @@
   <nav id="navbar">
     <div class="container">
       <div class="nav-inner">
-        <a href="#" class="nav-logo">ReelVault</a>
+        <a href="#" class="nav-logo"><span class="logo-spark">✦</span>ReelVault</a>
         <ul class="nav-links">
           <li><a href="#features">Features</a></li>
           <li><a href="#pricing">Pricing</a></li>

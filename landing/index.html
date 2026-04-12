@@ -28,7 +28,10 @@
       background: var(--white);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      opacity: 0;
+      animation: pageIn 0.5s ease 0.05s forwards;
     }
+    @keyframes pageIn { to { opacity: 1; } }
 
     /* ── Utilities ── */
     .label {
@@ -41,10 +44,10 @@
       margin-bottom: 20px;
     }
     .section-headline {
-      font-size: 48px;
+      font-size: 52px;
       font-weight: 700;
-      letter-spacing: -1px;
-      line-height: 1.1;
+      letter-spacing: -1.5px;
+      line-height: 1.08;
       color: var(--black);
     }
     .section-body {
@@ -93,21 +96,40 @@
       margin: 0 auto;
       padding: 0 32px;
     }
+    /* thin purple section divider */
+    .section-rule {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, var(--purple), transparent);
+      opacity: 0.25;
+    }
 
-    /* ── Animate on scroll ── */
+    /* ── Scroll reveal ── */
     .reveal {
       opacity: 0;
       transform: translateY(30px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-28px);
       transition: opacity 0.6s ease, transform 0.6s ease;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.18s; }
+    .reveal-delay-3 { transition-delay: 0.28s; }
+    .reveal-delay-4 { transition-delay: 0.38s; }
+    .reveal-delay-5 { transition-delay: 0.48s; }
+    .reveal-delay-6 { transition-delay: 0.58s; }
+    .reveal-delay-7 { transition-delay: 0.68s; }
+    .reveal-delay-8 { transition-delay: 0.78s; }
+    .reveal-delay-9 { transition-delay: 0.88s; }
+    .reveal-delay-10 { transition-delay: 0.98s; }
+    .reveal-delay-11 { transition-delay: 1.08s; }
+    .reveal-delay-12 { transition-delay: 1.18s; }
+    .reveal-delay-13 { transition-delay: 1.28s; }
 
     /* ── Navbar ── */
     #navbar {
@@ -120,87 +142,42 @@
     }
     #navbar.scrolled {
       background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-color: var(--gray-300);
       padding: 14px 0;
     }
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-logo {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--black);
-      text-decoration: none;
-      letter-spacing: -0.5px;
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      list-style: none;
-    }
-    .nav-links a {
-      font-size: 14px;
-      color: var(--gray-500);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-size: 18px; font-weight: 700; color: var(--black); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { font-size: 14px; color: var(--gray-500); text-decoration: none; transition: color 0.2s; }
     .nav-links a:hover { color: var(--black); }
-    .nav-cta {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--purple);
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
+    .nav-cta { font-size: 14px; font-weight: 600; color: var(--purple); text-decoration: none; transition: opacity 0.2s; }
     .nav-cta:hover { opacity: 0.75; }
-    .nav-hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 4px;
-    }
-    .nav-hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: var(--black);
-      transition: transform 0.25s, opacity 0.25s;
-    }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--black); transition: transform 0.25s, opacity 0.25s; }
     .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
     .nav-hamburger.open span:nth-child(2) { opacity: 0; }
     .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-    .nav-mobile {
-      display: none;
-      flex-direction: column;
-      background: var(--white);
-      border-top: 1px solid var(--gray-300);
-      padding: 12px 0;
-    }
+    .nav-mobile { display: none; flex-direction: column; background: var(--white); border-top: 1px solid var(--gray-300); padding: 12px 0; }
     .nav-mobile.open { display: flex; }
-    .nav-mobile a {
-      padding: 12px 32px;
-      font-size: 16px;
-      color: var(--black);
-      text-decoration: none;
-    }
+    .nav-mobile a { padding: 12px 32px; font-size: 16px; color: var(--black); text-decoration: none; }
 
     /* ── Hero ── */
     #hero {
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
+      align-items: center;
       padding-top: 80px;
       position: relative;
+      overflow: hidden;
+    }
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 64px;
+      align-items: center;
+      width: 100%;
     }
     .hero-badge {
       display: inline-flex;
@@ -217,10 +194,10 @@
       animation: fadeUp 0.5s ease 0.2s forwards;
     }
     .hero-headline {
-      font-size: 72px;
+      font-size: 80px;
       font-weight: 800;
-      letter-spacing: -2px;
-      line-height: 1.0;
+      letter-spacing: -3px;
+      line-height: 0.95;
       color: var(--black);
       margin-bottom: 28px;
     }
@@ -229,16 +206,16 @@
       opacity: 0;
       transform: translateY(20px);
       animation: wordIn 0.5s ease forwards;
-      margin-right: 0.22em;
+      margin-right: 0.18em;
     }
     .hero-sub {
       font-size: 20px;
       color: #666;
-      line-height: 1.6;
-      max-width: 520px;
+      line-height: 1.65;
+      max-width: 480px;
       margin-bottom: 40px;
       opacity: 0;
-      animation: fadeUp 0.5s ease 0.9s forwards;
+      animation: fadeUp 0.5s ease 0.95s forwards;
     }
     .hero-buttons {
       display: flex;
@@ -246,7 +223,7 @@
       gap: 24px;
       margin-bottom: 32px;
       opacity: 0;
-      animation: fadeUp 0.5s ease 1.1s forwards;
+      animation: fadeUp 0.5s ease 1.15s forwards;
       flex-wrap: wrap;
     }
     .hero-trust {
@@ -256,13 +233,146 @@
       font-size: 13px;
       color: var(--gray-500);
       opacity: 0;
-      animation: fadeUp 0.5s ease 1.3s forwards;
+      animation: fadeUp 0.5s ease 1.35s forwards;
       flex-wrap: wrap;
     }
     .hero-trust .dot { color: var(--gray-300); }
+
+    /* ── iPhone mockup ── */
+    .hero-phone-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.6s forwards;
+      position: relative;
+    }
+    .phone-glow {
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(ellipse at center, rgba(83,74,183,0.18) 0%, transparent 70%);
+      filter: blur(32px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .iphone {
+      position: relative;
+      width: 260px;
+      height: 560px;
+      background: #0a0a0a;
+      border-radius: 52px;
+      border: 8px solid #1a1a1a;
+      box-shadow:
+        0 0 0 1px #333,
+        0 32px 80px rgba(0,0,0,0.35),
+        0 8px 24px rgba(0,0,0,0.2),
+        inset 0 0 0 1px #2a2a2a;
+      overflow: hidden;
+      z-index: 1;
+      animation: phoneFloat 3s ease-in-out infinite;
+    }
+    @keyframes phoneFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+    /* Dynamic Island */
+    .iphone-island {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88px;
+      height: 28px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 10;
+    }
+    /* side buttons */
+    .iphone::before {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 100px;
+      width: 4px;
+      height: 36px;
+      background: #222;
+      border-radius: 2px 0 0 2px;
+      box-shadow: 0 46px 0 #222, 0 84px 0 #222;
+    }
+    .iphone::after {
+      content: '';
+      position: absolute;
+      right: -10px;
+      top: 140px;
+      width: 4px;
+      height: 60px;
+      background: #222;
+      border-radius: 0 2px 2px 0;
+    }
+    .iphone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 44px;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+    /* Screenshot fills the screen — replace src with base64 when available */
+    .iphone-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+    /* Placeholder shown when no screenshot */
+    .iphone-placeholder {
+      width: 100%;
+      height: 100%;
+      background: #f0effe;
+      display: flex;
+      flex-direction: column;
+      padding: 56px 16px 16px;
+      gap: 8px;
+    }
+    .iph-bar {
+      height: 10px;
+      border-radius: 100px;
+      background: #d4c8fb;
+    }
+    .iph-card {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+    }
+    .iph-thumb {
+      width: 44px; height: 44px;
+      border-radius: 7px;
+      background: #d4c8fb;
+      flex-shrink: 0;
+    }
+    .iph-line {
+      height: 8px;
+      border-radius: 100px;
+      background: #e5dffe;
+      margin-bottom: 5px;
+    }
+    .iph-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: #f0effe;
+      color: var(--purple);
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    /* ── Scroll indicator ── */
     .hero-scroll {
       position: absolute;
-      bottom: 40px;
+      bottom: 36px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -270,427 +380,216 @@
       align-items: center;
       gap: 8px;
       opacity: 0;
-      animation: fadeUp 0.5s ease 1.6s forwards;
+      animation: fadeUp 0.5s ease 1.7s forwards;
       transition: opacity 0.4s;
     }
-    .hero-scroll span {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gray-500);
-    }
+    .hero-scroll span { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-500); }
     .scroll-arrow {
-      width: 16px;
-      height: 16px;
-      border-right: 2px solid var(--gray-400, #a3a3a3);
-      border-bottom: 2px solid var(--gray-400, #a3a3a3);
+      width: 16px; height: 16px;
+      border-right: 2px solid #a3a3a3;
+      border-bottom: 2px solid #a3a3a3;
       transform: rotate(45deg);
       animation: bounce 1.6s infinite;
     }
 
-    @keyframes wordIn {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes bounce {
-      0%, 100% { transform: rotate(45deg) translateY(0); }
-      50%       { transform: rotate(45deg) translateY(5px); }
-    }
+    @keyframes wordIn  { to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes bounce  { 0%,100% { transform: rotate(45deg) translateY(0); } 50% { transform: rotate(45deg) translateY(5px); } }
 
-    /* ── Social proof bar ── */
-    #proof {
-      padding: 40px 0;
-      border-top: 1px solid var(--gray-300);
-      border-bottom: 1px solid var(--gray-300);
-    }
-    .proof-inner {
-      display: flex;
-      align-items: center;
-      gap: 48px;
-      flex-wrap: wrap;
-    }
-    .proof-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--gray-500);
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-    }
-    .proof-names {
-      display: flex;
-      gap: 40px;
-      flex-wrap: wrap;
-    }
-    .proof-names span {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--gray-300);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
+    /* ── Social proof ── */
+    #proof { padding: 40px 0; border-top: 1px solid var(--gray-300); border-bottom: 1px solid var(--gray-300); }
+    .proof-inner { display: flex; align-items: center; gap: 48px; flex-wrap: wrap; }
+    .proof-label { font-size: 12px; font-weight: 500; color: var(--gray-500); letter-spacing: 0.05em; white-space: nowrap; }
+    .proof-names { display: flex; gap: 40px; flex-wrap: wrap; }
+    .proof-names span { font-size: 14px; font-weight: 700; color: var(--gray-300); letter-spacing: 0.08em; text-transform: uppercase; }
 
     /* ── Problem ── */
-    #problem { padding: 120px 0; }
-    .problem-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 40px;
-      margin-top: 64px;
-    }
-    .stat-number {
-      font-size: 56px;
-      font-weight: 800;
-      letter-spacing: -2px;
-      color: var(--black);
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-    .stat-label {
-      font-size: 14px;
-      color: var(--gray-500);
-      line-height: 1.5;
-    }
+    #problem { padding: 140px 0; }
+    .problem-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 72px; }
+    .stat-number { font-size: 60px; font-weight: 800; letter-spacing: -2px; color: var(--black); line-height: 1; margin-bottom: 10px; }
+    .stat-label { font-size: 14px; color: var(--gray-500); line-height: 1.5; }
 
     /* ── How it works ── */
-    #how { padding: 120px 0; background: var(--gray-100); }
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 48px;
-      margin-top: 64px;
-    }
-    .step-num {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--purple);
-      letter-spacing: 0.05em;
-      margin-bottom: 16px;
-    }
-    .step-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 12px;
-    }
-    .step-desc { font-size: 16px; color: #666; line-height: 1.6; }
+    #how { padding: 140px 0; background: var(--gray-100); }
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; margin-top: 72px; }
+    .step-num { font-size: 13px; font-weight: 700; color: var(--purple); letter-spacing: 0.05em; margin-bottom: 16px; }
+    .step-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px; }
+    .step-desc { font-size: 16px; color: #666; line-height: 1.65; }
 
     /* ── Features ── */
-    #features { padding: 120px 0; }
-    .features-header { margin-bottom: 80px; }
-    .feature-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-      padding: 64px 0;
-      border-top: 1px solid var(--gray-100);
+    #features {
+      padding: 140px 0;
+      background-image: radial-gradient(circle, #e5e5e5 1px, transparent 1px);
+      background-size: 28px 28px;
+      background-color: var(--white);
     }
+    .features-header { margin-bottom: 88px; }
+    .feature-row { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; padding: 72px 0; border-top: 1px solid rgba(0,0,0,0.06); }
     .feature-row.flip .feature-text { order: 2; }
     .feature-row.flip .feature-visual { order: 1; }
-    .feature-title {
-      font-size: 32px;
-      font-weight: 700;
-      letter-spacing: -0.75px;
-      margin-bottom: 16px;
-    }
-    .feature-desc { font-size: 17px; color: #666; line-height: 1.7; }
+    .feature-title { font-size: 34px; font-weight: 700; letter-spacing: -0.75px; margin-bottom: 16px; }
+    .feature-desc { font-size: 17px; color: #666; line-height: 1.75; }
 
     /* ── UI mockups ── */
-    .mockup {
-      background: var(--white);
-      border: 1px solid var(--gray-300);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    }
-    .mockup-card {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      padding: 14px;
-      border-radius: 10px;
-      background: var(--gray-100);
-      margin-bottom: 10px;
-    }
-    .mockup-thumb {
-      width: 56px; height: 56px;
-      border-radius: 8px;
-      background: var(--gray-300);
-      flex-shrink: 0;
-    }
-    .mockup-line {
-      height: 10px;
-      border-radius: 100px;
-      background: var(--gray-300);
-      margin-bottom: 7px;
-    }
-    .mockup-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 100px;
-      background: var(--purple-light);
-      color: var(--purple);
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .mockup-search {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      border: 1.5px solid var(--gray-300);
-      border-radius: 8px;
-      margin-bottom: 16px;
-    }
-    .mockup-search-icon {
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      border: 2px solid var(--gray-300);
-      flex-shrink: 0;
-    }
-    .mockup-search-text {
-      height: 10px; width: 120px;
-      border-radius: 100px;
-      background: var(--gray-300);
-    }
+    .mockup { background: var(--white); border: 1px solid var(--gray-300); border-radius: 16px; padding: 24px; box-shadow: 0 4px 32px rgba(0,0,0,0.07); }
+    .mockup-card { display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 10px; background: var(--gray-100); margin-bottom: 10px; }
+    .mockup-thumb { width: 56px; height: 56px; border-radius: 8px; background: var(--gray-300); flex-shrink: 0; }
+    .mockup-line { height: 10px; border-radius: 100px; background: var(--gray-300); margin-bottom: 7px; }
+    .mockup-badge { display: inline-block; padding: 3px 10px; border-radius: 100px; background: var(--purple-light); color: var(--purple); font-size: 11px; font-weight: 600; }
+    .mockup-search { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1.5px solid var(--gray-300); border-radius: 8px; margin-bottom: 16px; }
+    .mockup-search-icon { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--gray-300); flex-shrink: 0; }
+    .mockup-search-text { height: 10px; width: 120px; border-radius: 100px; background: var(--gray-300); }
     .mockup-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .mockup-pill {
-      padding: 5px 14px;
-      border-radius: 100px;
-      background: var(--gray-100);
-      border: 1px solid var(--gray-300);
-      font-size: 12px;
-      color: var(--gray-500);
-    }
-    .mockup-pill.active {
-      background: var(--purple);
-      border-color: var(--purple);
-      color: var(--white);
-    }
-    .mockup-note {
-      padding: 16px;
-      border-radius: 10px;
-      border: 1.5px solid var(--gray-300);
-      margin-top: 12px;
-    }
-    .mockup-note-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-500);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-    .mockup-note-text {
-      height: 9px;
-      border-radius: 100px;
-      background: var(--gray-300);
-      margin-bottom: 7px;
-    }
-    .mockup-export {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      border: 1.5px solid var(--gray-300);
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    .mockup-export-label {
-      height: 10px; width: 100px;
-      border-radius: 100px;
-      background: var(--gray-300);
-    }
-    .mockup-export-btn {
-      padding: 5px 14px;
-      background: var(--black);
-      color: var(--white);
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
+    .mockup-pill { padding: 5px 14px; border-radius: 100px; background: var(--gray-100); border: 1px solid var(--gray-300); font-size: 12px; color: var(--gray-500); }
+    .mockup-pill.active { background: var(--purple); border-color: var(--purple); color: var(--white); }
+    .mockup-note { padding: 16px; border-radius: 10px; border: 1.5px solid var(--gray-300); margin-top: 12px; }
+    .mockup-note-label { font-size: 11px; font-weight: 600; color: var(--gray-500); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+    .mockup-note-text { height: 9px; border-radius: 100px; background: var(--gray-300); margin-bottom: 7px; }
+    .mockup-export { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 1.5px solid var(--gray-300); border-radius: 10px; margin-bottom: 10px; }
+    .mockup-export-label { height: 10px; width: 100px; border-radius: 100px; background: var(--gray-300); }
+    .mockup-export-btn { padding: 5px 14px; background: var(--black); color: var(--white); border-radius: 6px; font-size: 12px; font-weight: 600; }
 
     /* ── Pricing ── */
-    #pricing { padding: 120px 0; background: var(--gray-100); }
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-top: 64px;
-      max-width: 780px;
-    }
+    #pricing { padding: 140px 0; background: var(--gray-100); }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 72px; max-width: 780px; }
     .pricing-card {
       background: var(--white);
       border: 1px solid var(--gray-300);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 40px;
-      transition: box-shadow 0.2s, transform 0.2s;
+      transition: box-shadow 0.25s, transform 0.25s;
     }
     .pricing-card:hover {
-      box-shadow: 0 8px 40px rgba(0,0,0,0.10);
-      transform: translateY(-4px);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+      transform: scale(1.02) translateY(-2px);
     }
-    .pricing-card.pro {
-      border-left: 4px solid var(--purple);
-      box-shadow: 0 4px 24px rgba(83,74,183,0.10);
-    }
-    .pricing-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      background: var(--purple-light);
-      color: var(--purple);
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 100px;
-      margin-bottom: 20px;
-    }
-    .pricing-plan {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gray-500);
-      margin-bottom: 8px;
-    }
-    .pricing-price {
-      font-size: 44px;
-      font-weight: 800;
-      letter-spacing: -2px;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
+    .pricing-card.pro { border-left: 4px solid var(--purple); box-shadow: 0 4px 28px rgba(83,74,183,0.10); }
+    .pricing-card.pro:hover { box-shadow: 0 12px 48px rgba(83,74,183,0.18); }
+    .pricing-badge { display: inline-block; padding: 3px 10px; background: var(--purple-light); color: var(--purple); font-size: 11px; font-weight: 700; border-radius: 100px; margin-bottom: 20px; }
+    .pricing-plan { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-500); margin-bottom: 8px; }
+    .pricing-price { font-size: 48px; font-weight: 800; letter-spacing: -2px; line-height: 1; margin-bottom: 6px; }
     .pricing-period { font-size: 14px; color: var(--gray-500); margin-bottom: 28px; }
     .pricing-features { list-style: none; margin-bottom: 32px; }
-    .pricing-features li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 15px;
-      color: var(--gray-700);
-      padding: 7px 0;
-      border-bottom: 1px solid var(--gray-100);
-    }
+    .pricing-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: var(--gray-700); padding: 7px 0; border-bottom: 1px solid var(--gray-100); }
     .pricing-features li:last-child { border-bottom: none; }
     .check { color: var(--purple); font-size: 14px; flex-shrink: 0; margin-top: 2px; }
 
-    /* ── Roadmap ── */
-    #roadmap { padding: 120px 0; }
-    .roadmap-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      margin-top: 64px;
+    /* ── Roadmap timeline ── */
+    #roadmap { padding: 140px 0; }
+    .roadmap-timeline {
+      position: relative;
+      margin-top: 72px;
+      max-width: 680px;
     }
-    .roadmap-col-title {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gray-500);
-      margin-bottom: 24px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--gray-300);
+    .roadmap-timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--gray-300);
     }
-    .roadmap-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--gray-100);
+    .tl-item {
+      position: relative;
+      padding-left: 44px;
+      padding-bottom: 36px;
+      opacity: 0;
+      transform: translateX(-24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .tl-item.visible { opacity: 1; transform: translateX(0); }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot {
+      position: absolute;
+      left: 4px;
+      top: 6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      border: 2px solid var(--white);
+      box-shadow: 0 0 0 2px var(--gray-300);
+      z-index: 1;
+    }
+    .tl-item.done .tl-dot {
+      background: var(--purple);
+      box-shadow: 0 0 0 2px var(--purple);
+    }
+    .tl-item.coming .tl-dot {
+      background: var(--white);
+      border: 2px dashed var(--gray-300);
+      box-shadow: none;
+    }
+    /* dashed connector for "coming" items — overlay on solid line */
+    .tl-item.coming::after {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 0;
+      bottom: -36px;
+      width: 0;
+      border-left: 2px dashed var(--gray-300);
+      background: none;
+    }
+    .tl-item:last-child.coming::after { display: none; }
+    .tl-content { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .tl-label {
       font-size: 16px;
+      font-weight: 600;
+      color: var(--black);
     }
-    .roadmap-item:last-child { border-bottom: none; }
-    .roadmap-item.done { color: var(--black); font-weight: 500; }
-    .roadmap-item.coming { color: var(--gray-500); }
-    .roadmap-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .tl-item.coming .tl-label { color: var(--gray-500); font-weight: 400; }
+    .tl-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .tl-badge.live { background: var(--purple-light); color: var(--purple); }
+    .tl-badge.soon { background: var(--gray-100); color: var(--gray-500); border: 1px solid var(--gray-300); }
+    .tl-quarter { font-size: 12px; color: var(--gray-500); margin-left: auto; }
 
     /* ── CTA ── */
     #cta { padding: 140px 0; background: var(--black); }
-    .cta-inner { }
-    .cta-sub {
-      font-size: 20px;
-      color: #999;
-      line-height: 1.6;
-      max-width: 480px;
-      margin: 20px 0 40px;
-    }
-    .btn-white {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 16px 32px;
-      background: var(--white);
-      color: var(--black);
-      font-family: var(--font);
-      font-size: 16px;
-      font-weight: 700;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: opacity 0.2s, transform 0.15s;
-    }
+    .cta-sub { font-size: 20px; color: #999; line-height: 1.6; max-width: 480px; margin: 20px 0 40px; }
+    .btn-white { display: inline-flex; align-items: center; gap: 6px; padding: 16px 32px; background: var(--white); color: var(--black); font-family: var(--font); font-size: 16px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; transition: opacity 0.2s, transform 0.15s; }
     .btn-white:hover { opacity: 0.9; transform: translateY(-1px); }
-    .cta-link {
-      display: block;
-      margin-top: 20px;
-      font-size: 14px;
-      color: #555;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
+    .cta-link { display: block; margin-top: 20px; font-size: 14px; color: #555; text-decoration: none; transition: color 0.2s; }
     .cta-link:hover { color: #888; }
 
     /* ── Footer ── */
-    #footer {
-      padding: 32px 0;
-      background: var(--black);
-      border-top: 1px solid #1a1a1a;
-    }
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .footer-logo {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--white);
-      text-decoration: none;
-    }
+    #footer { padding: 32px 0; background: var(--black); border-top: 1px solid #1a1a1a; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-logo { font-size: 16px; font-weight: 700; color: var(--white); text-decoration: none; }
     .footer-links { display: flex; gap: 28px; flex-wrap: wrap; }
-    .footer-links a {
-      font-size: 13px;
-      color: #555;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
+    .footer-links a { font-size: 13px; color: #555; text-decoration: none; transition: color 0.2s; }
     .footer-links a:hover { color: #888; }
     .footer-copy { font-size: 13px; color: #444; }
 
     /* ── Responsive ── */
+    @media (max-width: 960px) {
+      .hero-layout { grid-template-columns: 1fr; }
+      .hero-phone-wrap { margin-top: 48px; }
+      .iphone { width: 220px; height: 474px; }
+      .section-headline { font-size: 40px; }
+    }
     @media (max-width: 900px) {
-      .section-headline { font-size: 36px; }
-      .hero-headline { font-size: 48px; }
       .feature-row { grid-template-columns: 1fr; gap: 40px; }
       .feature-row.flip .feature-text { order: 1; }
       .feature-row.flip .feature-visual { order: 2; }
       .steps-grid { grid-template-columns: 1fr; gap: 40px; }
       .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
-      .roadmap-grid { grid-template-columns: 1fr; gap: 40px; }
       .problem-stats { grid-template-columns: 1fr; gap: 32px; }
     }
     @media (max-width: 640px) {
       .container { padding: 0 20px; }
       .section-headline { font-size: 30px; letter-spacing: -0.5px; }
-      .hero-headline { font-size: 40px; letter-spacing: -1px; }
+      .hero-headline { font-size: 48px; letter-spacing: -2px; }
       .hero-sub { font-size: 17px; }
-      #hero { align-items: center; text-align: center; }
+      #hero { align-items: center; }
+      .hero-layout { justify-items: center; text-align: center; }
       .hero-buttons { justify-content: center; }
       .hero-trust { justify-content: center; }
       .nav-links { display: none; }
@@ -698,13 +597,14 @@
       .nav-hamburger { display: flex; }
       .proof-inner { justify-content: center; flex-direction: column; align-items: center; }
       .proof-names { justify-content: center; }
-      .stat-number { font-size: 44px; }
+      .stat-number { font-size: 48px; }
       .pricing-card { padding: 28px 24px; }
       #cta { padding: 100px 0; }
       .cta-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
       .cta-sub { text-align: center; }
       .footer-inner { flex-direction: column; align-items: center; text-align: center; }
       .footer-links { justify-content: center; }
+      .iphone { width: 200px; height: 430px; }
     }
   </style>
 </head>
@@ -737,26 +637,90 @@
   <!-- ── Hero ── -->
   <section id="hero">
     <div class="container">
-      <div class="hero-badge">✦ Now available</div>
-      <h1 class="hero-headline" id="hero-headline"></h1>
-      <p class="hero-sub">ReelVault organizes your Instagram saves automatically. Powered by AI, built for your brain.</p>
-      <div class="hero-buttons">
-        <a href="https://reelvault-two.vercel.app" class="btn-primary">Get started free</a>
-        <a href="https://t.me/ReelVault_official_bot" target="_blank" rel="noopener" class="btn-ghost">Open Telegram bot →</a>
-      </div>
-      <div class="hero-trust">
-        <span>Free to start</span>
-        <span class="dot">·</span>
-        <span>No credit card</span>
-        <span class="dot">·</span>
-        <span>2 min setup</span>
-      </div>
-      <div class="hero-scroll" id="hero-scroll">
-        <span>scroll</span>
-        <div class="scroll-arrow"></div>
+      <div class="hero-layout">
+        <!-- Text -->
+        <div class="hero-text">
+          <div class="hero-badge">✦ Now available</div>
+          <h1 class="hero-headline" id="hero-headline"></h1>
+          <p class="hero-sub">ReelVault organizes your Instagram saves automatically. Powered by AI, built for your brain.</p>
+          <div class="hero-buttons">
+            <a href="https://reelvault-two.vercel.app" class="btn-primary">Get started free</a>
+            <a href="https://t.me/ReelVault_official_bot" target="_blank" rel="noopener" class="btn-ghost">Open Telegram bot →</a>
+          </div>
+          <div class="hero-trust">
+            <span>Free to start</span>
+            <span class="dot">·</span>
+            <span>No credit card</span>
+            <span class="dot">·</span>
+            <span>2 min setup</span>
+          </div>
+        </div>
+        <!-- iPhone mockup -->
+        <div class="hero-phone-wrap">
+          <div class="phone-glow"></div>
+          <div class="iphone">
+            <div class="iphone-island"></div>
+            <div class="iphone-screen">
+              <!--SCREENSHOT_PLACEHOLDER-->
+              <!-- To embed your screenshot, replace the div below with:
+                   <img src="data:image/png;base64,YOURBASE64HERE" alt="ReelVault app" />
+                   Run: base64 -i yourscreenshot.png | tr -d '\n' to get the base64 string -->
+              <div class="iphone-placeholder">
+                <div class="iph-bar" style="width:55%;margin-bottom:16px;"></div>
+                <div class="iph-card">
+                  <div class="iph-thumb"></div>
+                  <div style="flex:1">
+                    <div class="iph-line" style="width:80%"></div>
+                    <div class="iph-line" style="width:55%"></div>
+                    <span class="iph-badge">✦ Travel</span>
+                  </div>
+                </div>
+                <div class="iph-card">
+                  <div class="iph-thumb"></div>
+                  <div style="flex:1">
+                    <div class="iph-line" style="width:70%"></div>
+                    <div class="iph-line" style="width:45%"></div>
+                    <span class="iph-badge">✦ Cooking</span>
+                  </div>
+                </div>
+                <div class="iph-card">
+                  <div class="iph-thumb"></div>
+                  <div style="flex:1">
+                    <div class="iph-line" style="width:75%"></div>
+                    <div class="iph-line" style="width:50%"></div>
+                    <span class="iph-badge">✦ Music</span>
+                  </div>
+                </div>
+                <div class="iph-card">
+                  <div class="iph-thumb"></div>
+                  <div style="flex:1">
+                    <div class="iph-line" style="width:60%"></div>
+                    <div class="iph-line" style="width:40%"></div>
+                    <span class="iph-badge">✦ Design</span>
+                  </div>
+                </div>
+                <div class="iph-card">
+                  <div class="iph-thumb"></div>
+                  <div style="flex:1">
+                    <div class="iph-line" style="width:85%"></div>
+                    <div class="iph-line" style="width:50%"></div>
+                    <span class="iph-badge">✦ Sport</span>
+                  </div>
+                </div>
+              </div>
+              <!--/SCREENSHOT_PLACEHOLDER-->
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="hero-scroll" id="hero-scroll">
+      <span>scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
   </section>
+
+  <div class="section-rule"></div>
 
   <!-- ── Social proof ── -->
   <section id="proof">
@@ -772,6 +736,8 @@
       </div>
     </div>
   </section>
+
+  <div class="section-rule"></div>
 
   <!-- ── Problem ── -->
   <section id="problem">
@@ -795,6 +761,8 @@
       </div>
     </div>
   </section>
+
+  <div class="section-rule"></div>
 
   <!-- ── How it works ── -->
   <section id="how">
@@ -821,6 +789,8 @@
     </div>
   </section>
 
+  <div class="section-rule"></div>
+
   <!-- ── Features ── -->
   <section id="features">
     <div class="container">
@@ -838,27 +808,15 @@
           <div class="mockup">
             <div class="mockup-card">
               <div class="mockup-thumb"></div>
-              <div style="flex:1">
-                <div class="mockup-line" style="width:70%"></div>
-                <div class="mockup-line" style="width:50%"></div>
-                <span class="mockup-badge">✦ Cooking</span>
-              </div>
+              <div style="flex:1"><div class="mockup-line" style="width:70%"></div><div class="mockup-line" style="width:50%"></div><span class="mockup-badge">✦ Cooking</span></div>
             </div>
             <div class="mockup-card">
               <div class="mockup-thumb"></div>
-              <div style="flex:1">
-                <div class="mockup-line" style="width:80%"></div>
-                <div class="mockup-line" style="width:45%"></div>
-                <span class="mockup-badge">✦ Travel</span>
-              </div>
+              <div style="flex:1"><div class="mockup-line" style="width:80%"></div><div class="mockup-line" style="width:45%"></div><span class="mockup-badge">✦ Travel</span></div>
             </div>
             <div class="mockup-card">
               <div class="mockup-thumb"></div>
-              <div style="flex:1">
-                <div class="mockup-line" style="width:60%"></div>
-                <div class="mockup-line" style="width:55%"></div>
-                <span class="mockup-badge">✦ Music</span>
-              </div>
+              <div style="flex:1"><div class="mockup-line" style="width:60%"></div><div class="mockup-line" style="width:55%"></div><span class="mockup-badge">✦ Music</span></div>
             </div>
           </div>
         </div>
@@ -871,30 +829,17 @@
         </div>
         <div class="feature-visual">
           <div class="mockup">
-            <div class="mockup-search">
-              <div class="mockup-search-icon"></div>
-              <div class="mockup-search-text"></div>
-            </div>
+            <div class="mockup-search"><div class="mockup-search-icon"></div><div class="mockup-search-text"></div></div>
             <div class="mockup-pills">
-              <span class="mockup-pill active">All</span>
-              <span class="mockup-pill">Cooking</span>
-              <span class="mockup-pill">Travel</span>
-              <span class="mockup-pill">Music</span>
-              <span class="mockup-pill">Design</span>
+              <span class="mockup-pill active">All</span><span class="mockup-pill">Cooking</span><span class="mockup-pill">Travel</span><span class="mockup-pill">Music</span><span class="mockup-pill">Design</span>
             </div>
             <div class="mockup-card">
               <div class="mockup-thumb"></div>
-              <div style="flex:1">
-                <div class="mockup-line" style="width:75%"></div>
-                <div class="mockup-line" style="width:50%"></div>
-              </div>
+              <div style="flex:1"><div class="mockup-line" style="width:75%"></div><div class="mockup-line" style="width:50%"></div></div>
             </div>
             <div class="mockup-card">
               <div class="mockup-thumb"></div>
-              <div style="flex:1">
-                <div class="mockup-line" style="width:65%"></div>
-                <div class="mockup-line" style="width:40%"></div>
-              </div>
+              <div style="flex:1"><div class="mockup-line" style="width:65%"></div><div class="mockup-line" style="width:40%"></div></div>
             </div>
           </div>
         </div>
@@ -909,10 +854,7 @@
           <div class="mockup">
             <div class="mockup-card">
               <div class="mockup-thumb"></div>
-              <div style="flex:1">
-                <div class="mockup-line" style="width:70%"></div>
-                <span class="mockup-badge">✦ Design</span>
-              </div>
+              <div style="flex:1"><div class="mockup-line" style="width:70%"></div><span class="mockup-badge">✦ Design</span></div>
             </div>
             <div class="mockup-note">
               <div class="mockup-note-label">Note</div>
@@ -931,24 +873,16 @@
         </div>
         <div class="feature-visual">
           <div class="mockup">
-            <div class="mockup-export">
-              <div class="mockup-export-label"></div>
-              <div class="mockup-export-btn">Export JSON</div>
-            </div>
-            <div class="mockup-export">
-              <div class="mockup-export-label" style="width:130px;"></div>
-              <div class="mockup-export-btn">Export</div>
-            </div>
-            <div class="mockup-export">
-              <div class="mockup-export-label" style="width:90px;"></div>
-              <div class="mockup-export-btn">Import</div>
-            </div>
+            <div class="mockup-export"><div class="mockup-export-label"></div><div class="mockup-export-btn">Export JSON</div></div>
+            <div class="mockup-export"><div class="mockup-export-label" style="width:130px;"></div><div class="mockup-export-btn">Export</div></div>
+            <div class="mockup-export"><div class="mockup-export-label" style="width:90px;"></div><div class="mockup-export-btn">Import</div></div>
           </div>
         </div>
       </div>
-
     </div>
   </section>
+
+  <div class="section-rule"></div>
 
   <!-- ── Pricing ── -->
   <section id="pricing">
@@ -990,34 +924,110 @@
     </div>
   </section>
 
-  <!-- ── Roadmap ── -->
+  <div class="section-rule"></div>
+
+  <!-- ── Roadmap timeline ── -->
   <section id="roadmap">
     <div class="container">
       <div class="reveal"><span class="label">Roadmap</span></div>
       <h2 class="section-headline reveal reveal-delay-1">We're just getting started.</h2>
-      <div class="roadmap-grid">
-        <div class="reveal reveal-delay-1">
-          <div class="roadmap-col-title">Done</div>
-          <div class="roadmap-item done"><span class="roadmap-icon">✓</span> Instagram Reels &amp; posts</div>
-          <div class="roadmap-item done"><span class="roadmap-icon">✓</span> AI categorization</div>
-          <div class="roadmap-item done"><span class="roadmap-icon">✓</span> Custom categories</div>
-          <div class="roadmap-item done"><span class="roadmap-icon">✓</span> Dark mode</div>
-          <div class="roadmap-item done"><span class="roadmap-icon">✓</span> Export &amp; backup</div>
-          <div class="roadmap-item done"><span class="roadmap-icon">✓</span> iOS Shortcut integration</div>
+      <div class="roadmap-timeline">
+        <div class="tl-item done reveal-delay-1">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">Instagram Reels &amp; posts</span>
+            <span class="tl-badge live">✓ Live</span>
+          </div>
         </div>
-        <div class="reveal reveal-delay-2">
-          <div class="roadmap-col-title">Coming</div>
-          <div class="roadmap-item coming"><span class="roadmap-icon">○</span> TikTok videos</div>
-          <div class="roadmap-item coming"><span class="roadmap-icon">○</span> YouTube Shorts</div>
-          <div class="roadmap-item coming"><span class="roadmap-icon">○</span> Shared collections</div>
-          <div class="roadmap-item coming"><span class="roadmap-icon">○</span> Collection chat</div>
-          <div class="roadmap-item coming"><span class="roadmap-icon">○</span> iOS native app</div>
-          <div class="roadmap-item coming"><span class="roadmap-icon">○</span> Browser extension</div>
-          <div class="roadmap-item coming"><span class="roadmap-icon">○</span> External video viewing</div>
+        <div class="tl-item done reveal-delay-2">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">AI categorization</span>
+            <span class="tl-badge live">✓ Live</span>
+          </div>
+        </div>
+        <div class="tl-item done reveal-delay-3">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">Custom categories &amp; dark mode</span>
+            <span class="tl-badge live">✓ Live</span>
+          </div>
+        </div>
+        <div class="tl-item done reveal-delay-4">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">Export &amp; backup</span>
+            <span class="tl-badge live">✓ Live</span>
+          </div>
+        </div>
+        <div class="tl-item done reveal-delay-5">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">iOS Shortcut integration</span>
+            <span class="tl-badge live">✓ Live</span>
+          </div>
+        </div>
+        <div class="tl-item coming reveal-delay-6">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">TikTok videos</span>
+            <span class="tl-badge soon">Coming soon</span>
+            <span class="tl-quarter">Q3 2026</span>
+          </div>
+        </div>
+        <div class="tl-item coming reveal-delay-7">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">YouTube Shorts</span>
+            <span class="tl-badge soon">Coming soon</span>
+            <span class="tl-quarter">Q3 2026</span>
+          </div>
+        </div>
+        <div class="tl-item coming reveal-delay-8">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">Shared collections</span>
+            <span class="tl-badge soon">Coming soon</span>
+            <span class="tl-quarter">Q4 2026</span>
+          </div>
+        </div>
+        <div class="tl-item coming reveal-delay-9">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">Collection chat</span>
+            <span class="tl-badge soon">Coming soon</span>
+            <span class="tl-quarter">Q4 2026</span>
+          </div>
+        </div>
+        <div class="tl-item coming reveal-delay-10">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">iOS native app</span>
+            <span class="tl-badge soon">Coming soon</span>
+            <span class="tl-quarter">2027</span>
+          </div>
+        </div>
+        <div class="tl-item coming reveal-delay-11">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">Browser extension</span>
+            <span class="tl-badge soon">Coming soon</span>
+            <span class="tl-quarter">2027</span>
+          </div>
+        </div>
+        <div class="tl-item coming reveal-delay-12">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <span class="tl-label">External video viewing</span>
+            <span class="tl-badge soon">Coming soon</span>
+            <span class="tl-quarter">2027</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
+
+  <div class="section-rule"></div>
 
   <!-- ── CTA ── -->
   <section id="cta">
@@ -1048,7 +1058,7 @@
   </footer>
 
   <script>
-    // ── Hero headline word-by-word animation ──────────────────────────────────
+    // ── Hero word-by-word animation ───────────────────────────────────────────
     (function() {
       const lines = [['Save', 'reels.'], ['Find', 'them', 'instantly.']];
       const headline = document.getElementById('hero-headline');
@@ -1066,13 +1076,13 @@
       });
     })();
 
-    // ── Navbar scroll behavior ────────────────────────────────────────────────
+    // ── Navbar scroll ─────────────────────────────────────────────────────────
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
       navbar.classList.toggle('scrolled', window.scrollY > 50);
     }, { passive: true });
 
-    // ── Hamburger menu ────────────────────────────────────────────────────────
+    // ── Hamburger ─────────────────────────────────────────────────────────────
     const hamburger = document.getElementById('hamburger');
     const navMobile = document.getElementById('nav-mobile');
     hamburger.addEventListener('click', () => {
@@ -1086,15 +1096,15 @@
       })
     );
 
-    // ── Scroll reveal ─────────────────────────────────────────────────────────
+    // ── Scroll reveal (fade-up + slide-left for timeline) ─────────────────────
     const revealObs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
       });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal, .tl-item').forEach(el => revealObs.observe(el));
 
-    // ── Count-up animation ────────────────────────────────────────────────────
+    // ── Count-up ──────────────────────────────────────────────────────────────
     function countUp(el) {
       const target = parseInt(el.dataset.count, 10);
       const suffix = el.dataset.suffix || '';
@@ -1109,13 +1119,11 @@
       })(start);
     }
     const countObs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { countUp(e.target); countObs.unobserve(e.target); }
-      });
+      entries.forEach(e => { if (e.isIntersecting) { countUp(e.target); countObs.unobserve(e.target); } });
     }, { threshold: 0.5 });
     document.querySelectorAll('[data-count]').forEach(el => countObs.observe(el));
 
-    // ── Hero scroll indicator fades out ──────────────────────────────────────
+    // ── Hero scroll indicator fades on scroll ─────────────────────────────────
     const heroScroll = document.getElementById('hero-scroll');
     window.addEventListener('scroll', () => {
       if (heroScroll) heroScroll.style.opacity = window.scrollY > 80 ? '0' : '';

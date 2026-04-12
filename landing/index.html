@@ -474,82 +474,152 @@
     .pricing-features li:last-child { border-bottom: none; }
     .check { color: var(--purple); font-size: 14px; flex-shrink: 0; margin-top: 2px; }
 
-    /* ── Roadmap timeline ── */
-    #roadmap { padding: 140px 0; }
-    .roadmap-timeline {
-      position: relative;
+    /* ── Roadmap horizontal timeline ── */
+    #roadmap { padding: 140px 0; overflow: hidden; }
+
+    .roadmap-scroll-wrap {
       margin-top: 72px;
-      max-width: 680px;
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
+      /* hide scrollbar but keep scrollable */
+      scrollbar-width: none;
+      padding-bottom: 8px;
     }
-    .roadmap-timeline::before {
+    .roadmap-scroll-wrap::-webkit-scrollbar { display: none; }
+
+    .roadmap-track {
+      display: inline-flex;
+      align-items: flex-start;
+      position: relative;
+      padding: 120px 48px 40px;
+      min-width: max-content;
+    }
+
+    /* the horizontal line — drawn via clip-path animation */
+    .roadmap-track::before {
       content: '';
       position: absolute;
-      left: 10px;
-      top: 8px;
-      bottom: 8px;
-      width: 2px;
+      top: 60px; /* midpoint of dot row */
+      left: 48px;
+      right: 48px;
+      height: 2px;
       background: var(--gray-300);
     }
-    .tl-item {
-      position: relative;
-      padding-left: 44px;
-      padding-bottom: 36px;
-      opacity: 0;
-      transform: translateX(-24px);
-      transition: opacity 0.55s ease, transform 0.55s ease;
-    }
-    .tl-item.visible { opacity: 1; transform: translateX(0); }
-    .tl-item:last-child { padding-bottom: 0; }
-    .tl-dot {
+    /* purple progress line covering the "done" portion */
+    .roadmap-progress {
       position: absolute;
-      left: 4px;
-      top: 6px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--gray-300);
-      border: 2px solid var(--white);
-      box-shadow: 0 0 0 2px var(--gray-300);
+      top: 60px;
+      left: 48px;
+      height: 2px;
+      width: 0;
+      background: var(--purple);
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1;
     }
-    .tl-item.done .tl-dot {
-      background: var(--purple);
-      box-shadow: 0 0 0 2px var(--purple);
+    .roadmap-track.line-drawn .roadmap-progress {
+      /* width set by JS based on last done node position */
     }
-    .tl-item.coming .tl-dot {
-      background: var(--white);
-      border: 2px dashed var(--gray-300);
-      box-shadow: none;
+
+    /* each milestone column */
+    .rm-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      width: 120px;
+      flex-shrink: 0;
+      scroll-snap-align: center;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
-    /* dashed connector for "coming" items — overlay on solid line */
-    .tl-item.coming::after {
+    .rm-node.visible { opacity: 1; transform: translateY(0); }
+
+    /* spacer between nodes — also draws the dashed segment for "coming" gap */
+    .rm-gap {
+      width: 32px;
+      flex-shrink: 0;
+      position: relative;
+      /* gap between live and coming: override with dashed via class */
+    }
+    .rm-gap.dashed::after {
       content: '';
       position: absolute;
-      left: 12px;
-      top: 0;
-      bottom: -36px;
-      width: 0;
-      border-left: 2px dashed var(--gray-300);
-      background: none;
+      top: 58px;
+      left: 0; right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(
+        to right,
+        var(--gray-300) 0px,
+        var(--gray-300) 6px,
+        transparent 6px,
+        transparent 12px
+      );
     }
-    .tl-item:last-child.coming::after { display: none; }
-    .tl-content { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .tl-label {
-      font-size: 16px;
+
+    /* dot */
+    .rm-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--purple);
+      box-shadow: 0 0 0 4px var(--purple-light);
+      position: relative;
+      z-index: 2;
+      margin-top: -1px; /* align center on the line */
+      flex-shrink: 0;
+    }
+    .rm-node.coming .rm-dot {
+      background: var(--white);
+      border: 2px dashed var(--gray-300);
+      box-shadow: 0 0 0 3px var(--white);
+    }
+
+    /* text above the dot */
+    .rm-above {
+      position: absolute;
+      bottom: calc(100% + 14px); /* above the dot */
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 110px;
+      text-align: center;
+    }
+    /* alternate: odd nodes label above, even below — creates zigzag to avoid collision */
+    .rm-node:nth-child(odd) .rm-above  { bottom: calc(100% + 14px); top: auto; }
+    .rm-node:nth-child(even) .rm-above { bottom: auto; top: calc(100% + 14px); }
+
+    .rm-label {
+      font-size: 12px;
       font-weight: 600;
       color: var(--black);
+      line-height: 1.3;
+      white-space: normal;
+      text-align: center;
     }
-    .tl-item.coming .tl-label { color: var(--gray-500); font-weight: 400; }
-    .tl-badge {
+    .rm-node.coming .rm-label { color: var(--gray-500); font-weight: 400; }
+
+    .rm-badge {
       display: inline-block;
-      padding: 2px 10px;
+      padding: 2px 8px;
       border-radius: 100px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
+      white-space: nowrap;
     }
-    .tl-badge.live { background: var(--purple-light); color: var(--purple); }
-    .tl-badge.soon { background: var(--gray-100); color: var(--gray-500); border: 1px solid var(--gray-300); }
-    .tl-quarter { font-size: 12px; color: var(--gray-500); margin-left: auto; }
+    .rm-badge.live { background: var(--purple-light); color: var(--purple); }
+    .rm-badge.soon { background: var(--gray-100); color: var(--gray-500); border: 1px solid var(--gray-300); }
+
+    .rm-quarter {
+      font-size: 10px;
+      color: var(--gray-500);
+      white-space: nowrap;
+    }
 
     /* ── CTA ── */
     #cta { padding: 140px 0; background: var(--black); }
@@ -931,97 +1001,110 @@
     <div class="container">
       <div class="reveal"><span class="label">Roadmap</span></div>
       <h2 class="section-headline reveal reveal-delay-1">We're just getting started.</h2>
-      <div class="roadmap-timeline">
-        <div class="tl-item done reveal-delay-1">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">Instagram Reels &amp; posts</span>
-            <span class="tl-badge live">✓ Live</span>
+    </div>
+    <!-- full-bleed scroll wrapper — intentionally outside .container -->
+    <div class="roadmap-scroll-wrap" id="roadmap-scroll">
+      <div class="roadmap-track" id="roadmap-track">
+        <div class="roadmap-progress" id="roadmap-progress"></div>
+
+        <div class="rm-node done" data-delay="0">
+          <div class="rm-above">
+            <span class="rm-label">Instagram Reels</span>
+            <span class="rm-badge live">✓ Live</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item done reveal-delay-2">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">AI categorization</span>
-            <span class="tl-badge live">✓ Live</span>
+        <div class="rm-gap"></div>
+
+        <div class="rm-node done" data-delay="80">
+          <div class="rm-above">
+            <span class="rm-label">AI categorization</span>
+            <span class="rm-badge live">✓ Live</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item done reveal-delay-3">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">Custom categories &amp; dark mode</span>
-            <span class="tl-badge live">✓ Live</span>
+        <div class="rm-gap"></div>
+
+        <div class="rm-node done" data-delay="160">
+          <div class="rm-above">
+            <span class="rm-label">Custom categories</span>
+            <span class="rm-badge live">✓ Live</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item done reveal-delay-4">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">Export &amp; backup</span>
-            <span class="tl-badge live">✓ Live</span>
+        <div class="rm-gap"></div>
+
+        <div class="rm-node done" data-delay="240">
+          <div class="rm-above">
+            <span class="rm-label">Dark mode</span>
+            <span class="rm-badge live">✓ Live</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item done reveal-delay-5">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">iOS Shortcut integration</span>
-            <span class="tl-badge live">✓ Live</span>
+        <div class="rm-gap"></div>
+
+        <div class="rm-node done" data-delay="320">
+          <div class="rm-above">
+            <span class="rm-label">Export &amp; backup</span>
+            <span class="rm-badge live">✓ Live</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item coming reveal-delay-6">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">TikTok videos</span>
-            <span class="tl-badge soon">Coming soon</span>
-            <span class="tl-quarter">Q3 2026</span>
+
+        <!-- transition gap between done and coming -->
+        <div class="rm-gap dashed"></div>
+
+        <div class="rm-node coming" data-delay="400">
+          <div class="rm-above">
+            <span class="rm-label">TikTok videos</span>
+            <span class="rm-badge soon">Q3 2026</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item coming reveal-delay-7">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">YouTube Shorts</span>
-            <span class="tl-badge soon">Coming soon</span>
-            <span class="tl-quarter">Q3 2026</span>
+        <div class="rm-gap dashed"></div>
+
+        <div class="rm-node coming" data-delay="480">
+          <div class="rm-above">
+            <span class="rm-label">YouTube Shorts</span>
+            <span class="rm-badge soon">Q3 2026</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item coming reveal-delay-8">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">Shared collections</span>
-            <span class="tl-badge soon">Coming soon</span>
-            <span class="tl-quarter">Q4 2026</span>
+        <div class="rm-gap dashed"></div>
+
+        <div class="rm-node coming" data-delay="560">
+          <div class="rm-above">
+            <span class="rm-label">Shared collections</span>
+            <span class="rm-badge soon">Q4 2026</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item coming reveal-delay-9">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">Collection chat</span>
-            <span class="tl-badge soon">Coming soon</span>
-            <span class="tl-quarter">Q4 2026</span>
+        <div class="rm-gap dashed"></div>
+
+        <div class="rm-node coming" data-delay="640">
+          <div class="rm-above">
+            <span class="rm-label">Collection chat</span>
+            <span class="rm-badge soon">Q4 2026</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item coming reveal-delay-10">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">iOS native app</span>
-            <span class="tl-badge soon">Coming soon</span>
-            <span class="tl-quarter">2027</span>
+        <div class="rm-gap dashed"></div>
+
+        <div class="rm-node coming" data-delay="720">
+          <div class="rm-above">
+            <span class="rm-label">iOS native app</span>
+            <span class="rm-badge soon">2027</span>
           </div>
+          <div class="rm-dot"></div>
         </div>
-        <div class="tl-item coming reveal-delay-11">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">Browser extension</span>
-            <span class="tl-badge soon">Coming soon</span>
-            <span class="tl-quarter">2027</span>
+        <div class="rm-gap dashed"></div>
+
+        <div class="rm-node coming" data-delay="800">
+          <div class="rm-above">
+            <span class="rm-label">Browser extension</span>
+            <span class="rm-badge soon">2027</span>
           </div>
-        </div>
-        <div class="tl-item coming reveal-delay-12">
-          <div class="tl-dot"></div>
-          <div class="tl-content">
-            <span class="tl-label">External video viewing</span>
-            <span class="tl-badge soon">Coming soon</span>
-            <span class="tl-quarter">2027</span>
-          </div>
+          <div class="rm-dot"></div>
         </div>
       </div>
     </div>
@@ -1096,13 +1179,55 @@
       })
     );
 
-    // ── Scroll reveal (fade-up + slide-left for timeline) ─────────────────────
+    // ── Scroll reveal ─────────────────────────────────────────────────────────
     const revealObs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
       });
     }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal, .tl-item').forEach(el => revealObs.observe(el));
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+    // ── Roadmap: line draw + node stagger ─────────────────────────────────────
+    (function() {
+      const track    = document.getElementById('roadmap-track');
+      const progress = document.getElementById('roadmap-progress');
+      if (!track || !progress) return;
+
+      const nodes = Array.from(track.querySelectorAll('.rm-node'));
+
+      // Find the last "done" node to set the progress bar width
+      function updateProgress() {
+        const doneNodes = nodes.filter(n => n.classList.contains('done'));
+        if (!doneNodes.length) return;
+        const lastDone = doneNodes[doneNodes.length - 1];
+        const trackRect = track.getBoundingClientRect();
+        const dotEl     = lastDone.querySelector('.rm-dot');
+        const dotRect   = dotEl.getBoundingClientRect();
+        // center of last done dot relative to track left edge + scroll
+        const dotCenter = dotRect.left + dotRect.width / 2 - trackRect.left + track.parentElement.scrollLeft;
+        const trackStart = 48; // left padding of track
+        progress.style.width = (dotCenter - trackStart) + 'px';
+      }
+
+      let triggered = false;
+      const roadmapObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting && !triggered) {
+            triggered = true;
+            // Animate progress line
+            requestAnimationFrame(() => updateProgress());
+            // Stagger each node fade-in
+            nodes.forEach(node => {
+              const delay = parseInt(node.dataset.delay || '0', 10);
+              setTimeout(() => node.classList.add('visible'), delay);
+            });
+            roadmapObs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      roadmapObs.observe(document.getElementById('roadmap'));
+    })();
 
     // ── Count-up ──────────────────────────────────────────────────────────────
     function countUp(el) {

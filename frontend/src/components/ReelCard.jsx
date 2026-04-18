@@ -1,3 +1,5 @@
+import { cleanCaption } from '../utils/caption.js';
+
 const isReelType = (t) => !t || t === 'reel' || t === 'unknown';
 
 export default function ReelCard({ reel, onClick }) {
@@ -29,7 +31,7 @@ export default function ReelCard({ reel, onClick }) {
         <div className="reel-list-top">
           <span className="reel-list-author">{reel.author || 'Unknown'}</span>
           {reel.caption && (
-            <span className="reel-list-caption">{reel.caption}</span>
+            <span className="reel-list-caption">{cleanCaption(reel.caption)}</span>
           )}
           <span className="reel-list-date">
             {new Date(reel.date_saved).toLocaleDateString()}

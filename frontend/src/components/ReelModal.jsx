@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api.js';
+import { cleanCaption } from '../utils/caption.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 
@@ -80,7 +81,8 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
   }
 
   const color        = CATEGORY_COLORS[reel.category] || '#534AB7';
-  const isLongCaption = reel.caption && reel.caption.length > 200;
+  const caption       = cleanCaption(reel.caption);
+  const isLongCaption = caption && caption.length > 200;
   const isReelType    = !reel.media_type || reel.media_type === 'reel' || reel.media_type === 'unknown';
 
   return (
@@ -142,11 +144,11 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
           </div>
 
           {/* Caption */}
-          {reel.caption && (
+          {caption && (
             <div className="modal-section">
               <span className="modal-label">Caption</span>
               <p className={`modal-caption ${captionExpanded ? 'expanded' : ''}`}>
-                {reel.caption}
+                {caption}
               </p>
               {isLongCaption && (
                 <button className="text-btn" onClick={() => setCaptionExpanded(x => !x)}>

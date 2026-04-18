@@ -9,7 +9,7 @@ const router = Router();
 const MEMBER_LIMIT    = 20;
 const INVITE_TTL_DAYS = 7;
 
-const FRONTEND_URL = () => (process.env.FRONTEND_URL || 'https://reelvault-two.vercel.app').replace(/\/$/, '');
+const FRONTEND_URL = () => (process.env.FRONTEND_URL || 'https://app.reelvault.me').replace(/\/$/, '');
 const BACKEND_URL  = () => (process.env.BACKEND_URL  || 'https://reelvault-production.up.railway.app').replace(/\/$/, '');
 
 // ── Helper: get caller's membership row (or null) ─────────────────────────────

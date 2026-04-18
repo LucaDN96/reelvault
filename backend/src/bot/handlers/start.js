@@ -21,7 +21,7 @@ export async function handleStart(ctx) {
 
   // Generate a one-click connect token
   const token      = createConnectToken(telegramId, telegramUsername);
-  const frontendUrl = process.env.FRONTEND_URL || 'https://reelvault-two.vercel.app';
+  const frontendUrl = process.env.FRONTEND_URL || 'https://app.reelvault.me';
   const connectUrl = `${frontendUrl}/connect?token=${token}`;
 
   return ctx.reply(

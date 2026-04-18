@@ -28,7 +28,7 @@ export function createBot() {
   async function requireLinked(ctx, next) {
     const profile = await getLinkedProfile(ctx);
     if (!profile) {
-      const frontendUrl = process.env.FRONTEND_URL || 'https://reelvault-two.vercel.app';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://app.reelvault.me';
       await ctx.reply(
         `🔗 Your Telegram account is not connected to ReelVault yet.\n\nUse /start to get a one-click connect link.`
       );

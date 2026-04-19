@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api.js';
 import { cleanCaption } from '../utils/caption.js';
+import { thumbnailSrc } from '../utils/thumbnail.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 
@@ -80,10 +81,13 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
     onClose();
   }
 
+  const [thumbError, setThumbError] = useState(false);
   const color        = CATEGORY_COLORS[reel.category] || '#534AB7';
   const caption       = cleanCaption(reel.caption);
   const isLongCaption = caption && caption.length > 200;
   const isReelType    = !reel.media_type || reel.media_type === 'reel' || reel.media_type === 'unknown';
+  const thumbSrc      = thumbnailSrc(reel.thumbnail);
+  const showThumb     = thumbSrc && !thumbError;
 
   return (
     <div
@@ -108,8 +112,13 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
           className="modal-thumb-wrap"
           onClick={e => e.stopPropagation()}
         >
-          {reel.thumbnail
-            ? <img src={reel.thumbnail} alt="" className="modal-thumb" />
+          {showThumb
+            ? <img
+                src={thumbSrc}
+                alt=""
+                className="modal-thumb"
+                onError={() => setThumbError(true)}
+              />
             : <div className="modal-thumb-placeholder" />
           }
           <div className="modal-play-btn">

@@ -7,6 +7,7 @@ import stripeRouter, { stripeWebhookRouter } from './routes/stripe.js';
 import telegramRouter     from './routes/telegram.js';
 import shortcutsRouter    from './routes/shortcuts.js';
 import collectionsRouter  from './routes/collections.js';
+import thumbnailsRouter  from './routes/thumbnails.js';
 
 export function createApp() {
   const app = express();
@@ -51,6 +52,9 @@ export function createApp() {
 
   // Collections: /invite/:token and /invite/accept are public; rest is auth-gated inside
   app.use('/collections', collectionsRouter);
+
+  // Thumbnails: public proxy for Instagram CDN images (avoids browser CORS + expiry)
+  app.use('/thumbnails', thumbnailsRouter);
 
   // ── Error handler ─────────────────────────────────────────────────────────
   app.use((err, _req, res, _next) => {

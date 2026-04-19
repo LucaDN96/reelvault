@@ -3,6 +3,37 @@ import * as cheerio from 'cheerio';
 
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
+const MAX_THUMBNAIL_BYTES = 400 * 1024; // 400 KB — skip base64 if larger
+
+/**
+ * Downloads a thumbnail URL and returns it as a base64 data URI.
+ * Falls back to the original URL on any error so the reel is still saved.
+ */
+async function thumbnailToBase64(url) {
+  if (!url) return '';
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': BROWSER_UA },
+      signal: AbortSignal.timeout(6000)
+    });
+    if (!res.ok) return url;
+
+    const contentType = (res.headers.get('content-type') || 'image/jpeg').split(';')[0].trim();
+    if (!contentType.startsWith('image/')) return url;
+
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (buf.length > MAX_THUMBNAIL_BYTES) {
+      console.log(`[ogFetch] thumbnail too large (${buf.length} bytes), keeping URL`);
+      return url;
+    }
+
+    return `data:${contentType};base64,${buf.toString('base64')}`;
+  } catch (e) {
+    console.log(`[ogFetch] thumbnail download failed: ${e.message}`);
+    return url; // keep original URL as fallback
+  }
+}
+
 // Extracts username from URL if present.
 // instagram.com/USERNAME/reel/CODE  → USERNAME
 // instagram.com/reel/CODE           → null
@@ -111,7 +142,10 @@ export async function fetchOgTags(url) {
       else media_type = 'unknown';
     }
 
-    return { thumbnail, author, caption, media_type };
+    // Download thumbnail at save time → base64 data URI (permanent, no CORS, no expiry)
+    const thumbnailData = await thumbnailToBase64(thumbnail);
+
+    return { thumbnail: thumbnailData, author, caption, media_type };
   } catch (err) {
     console.log(`[ogFetch] fetch error for ${url}: ${err.message}`);
     return { thumbnail: '', author: authorFromUrl || '', caption: '', media_type: typeFromUrl || 'unknown' };

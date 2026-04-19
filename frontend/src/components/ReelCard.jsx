@@ -1,14 +1,26 @@
+import { useState } from 'react';
 import { cleanCaption } from '../utils/caption.js';
+import { thumbnailSrc } from '../utils/thumbnail.js';
 
 const isReelType = (t) => !t || t === 'reel' || t === 'unknown';
 
 export default function ReelCard({ reel, onClick }) {
+  const [imgError, setImgError] = useState(false);
+  const src = thumbnailSrc(reel.thumbnail);
+  const showImg = src && !imgError;
+
   return (
     <article className="reel-list-item" onClick={onClick}>
       {/* Square thumbnail */}
       <div className="reel-list-thumb">
-        {reel.thumbnail
-          ? <img src={reel.thumbnail} alt="" className="reel-list-thumb-img" loading="lazy" />
+        {showImg
+          ? <img
+              src={src}
+              alt=""
+              className="reel-list-thumb-img"
+              loading="lazy"
+              onError={() => setImgError(true)}
+            />
           : <div className="reel-list-thumb-placeholder" />
         }
         <div className="reel-list-thumb-overlay">

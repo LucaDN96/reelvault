@@ -555,7 +555,7 @@ a:hover { text-decoration: underline; }
 .reel-list-thumb-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--surface2) 0%, var(--border) 100%);
+  background: linear-gradient(135deg, #534AB7 0%, #1a1535 100%);
 }
 .reel-list-thumb-overlay {
   position: absolute;
@@ -864,7 +864,7 @@ a:hover { text-decoration: underline; }
   cursor: pointer; overflow: hidden; flex-shrink: 0; display: block;
 }
 .modal-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
-.modal-thumb-placeholder { width: 100%; height: 100%; background: var(--surface2); }
+.modal-thumb-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, #534AB7 0%, #1a1535 100%); }
 
 .modal-play-btn {
   position: absolute; inset: 0;

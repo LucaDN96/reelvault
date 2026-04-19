@@ -183,7 +183,6 @@
     .nav-cta {
       font-size: 14px;
       font-weight: 600;
-      color: var(--white);
       background: var(--purple);
       text-decoration: none;
       padding: 8px 20px;
@@ -191,6 +190,9 @@
       transition: background 0.2s, transform 0.15s;
       white-space: nowrap;
     }
+    /* Higher specificity to beat .nav-links a and .nav-links a:hover */
+    .nav-links a.nav-cta,
+    .nav-links a.nav-cta:hover { color: #ffffff; }
     .nav-cta:hover { background: #453da0; transform: translateY(-1px); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
     .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--black); transition: transform 0.25s, opacity 0.25s; }

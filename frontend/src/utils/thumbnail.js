@@ -9,6 +9,6 @@ const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://reelvault-producti
 export function thumbnailSrc(thumbnail) {
   if (!thumbnail) return null;
   if (thumbnail.startsWith('data:')) return thumbnail;
-  if (thumbnail.startsWith('http')) return `${BACKEND_URL}/thumbnails?url=${encodeURIComponent(thumbnail)}`;
+  if (thumbnail.startsWith('http')) return `${BACKEND_URL}/proxy/thumbnail?url=${encodeURIComponent(thumbnail)}`;
   return null;
 }

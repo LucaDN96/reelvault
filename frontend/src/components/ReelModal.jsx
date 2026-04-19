@@ -75,13 +75,25 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
     setTimeout(() => setNoteSaved(false), 2000);
   }
 
+  async function handleRefreshMetadata() {
+    setRefreshing(true);
+    setThumbError(false);
+    try {
+      const updated = await api.reels.refreshMetadata(reel.id);
+      setReel(updated);
+      onUpdate?.(updated);
+    } catch { /* fail silently — metadata refresh is best-effort */ }
+    setRefreshing(false);
+  }
+
   async function handleDelete() {
     await api.reels.delete(reel.id);
     onDelete(reel.id);
     onClose();
   }
 
-  const [thumbError, setThumbError] = useState(false);
+  const [thumbError,     setThumbError]     = useState(false);
+  const [refreshing,     setRefreshing]     = useState(false);
   const color        = CATEGORY_COLORS[reel.category] || '#534AB7';
   const caption       = cleanCaption(reel.caption);
   const isLongCaption = caption && caption.length > 200;
@@ -222,6 +234,10 @@ export default function ReelModal({ reel: initialReel, onClose, onDelete, onUpda
             >
               {isReelType ? t('open_instagram') : t('open_instagram_post')}
             </a>
+
+            <button className="btn btn-ghost" onClick={handleRefreshMetadata} disabled={refreshing}>
+              {refreshing ? t('refreshing') : t('refresh_metadata')}
+            </button>
 
             {!confirmDelete ? (
               <button className="btn btn-danger" onClick={() => setConfirmDelete(true)}>

@@ -133,6 +133,13 @@ export default {
   telegram_unlink: 'Unlink',
   telegram_unlink_confirm: 'Unlink your Telegram account?',
 
+  refresh_thumbnails: 'Refresh thumbnails',
+  refresh_thumbnails_hint: 'Re-fetch thumbnails for reels saved before auto-download was enabled.',
+  refresh_thumbnails_result: 'Refreshed {count} of {total} thumbnails.',
+  refresh_thumbnails_none: 'All thumbnails are already up to date.',
+  refresh_metadata: 'Refresh metadata',
+  refreshing: 'Refreshing…',
+
   export_library: 'Export library',
   export_by_category: 'Export by category',
   export_btn: 'Export',

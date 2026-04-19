@@ -55,6 +55,7 @@ export function createApp() {
 
   // Thumbnails: public proxy for Instagram CDN images (avoids browser CORS + expiry)
   app.use('/thumbnails', thumbnailsRouter);
+  app.use('/proxy/thumbnail', thumbnailsRouter);
 
   // ── Error handler ─────────────────────────────────────────────────────────
   app.use((err, _req, res, _next) => {

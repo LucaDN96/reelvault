@@ -29,10 +29,12 @@ async function request(method, path, body) {
 // ── Reels ────────────────────────────────────────────────────────────────────
 export const api = {
   reels: {
-    list:        (params = {}) => { const qs = new URLSearchParams(params).toString(); return request('GET', `/reels${qs ? '?' + qs : ''}`); },
-    saveFromUrl: (url)         => request('POST',   '/reels/from-url', { url }),
-    update:      (id, body)    => request('PATCH',  `/reels/${id}`, body),
-    delete:      (id)          => request('DELETE', `/reels/${id}`)
+    list:            (params = {}) => { const qs = new URLSearchParams(params).toString(); return request('GET', `/reels${qs ? '?' + qs : ''}`); },
+    saveFromUrl:     (url)         => request('POST',   '/reels/from-url', { url }),
+    update:          (id, body)    => request('PATCH',  `/reels/${id}`, body),
+    delete:          (id)          => request('DELETE', `/reels/${id}`),
+    refreshMetadata: (id)          => request('POST',   `/reels/${id}/refresh-metadata`),
+    refreshAll:      ()            => request('POST',   '/reels/refresh')
   },
   categories: {
     list:   ()         => request('GET',    '/categories'),

@@ -21,6 +21,7 @@ export default function SettingsScreen() {
   const [shortcutToken,    setShortcutToken]     = useState(null);
   const [tokenVisible,     setTokenVisible]      = useState(false);
   const [tokenCopied,      setTokenCopied]       = useState(false);
+  const [refreshResult,    setRefreshResult]     = useState(null);
 
   const fileRef = useRef(null);
 
@@ -51,6 +52,17 @@ export default function SettingsScreen() {
     try { await api.telegram.unlink(); await refreshProfile(); }
     catch (e) { alert(e.message); }
     setLoad('unlink', false);
+  }
+
+  // ── Refresh thumbnails ───────────────────────────────────────────────────
+  async function handleRefreshThumbnails() {
+    setLoad('refresh', true);
+    setRefreshResult(null);
+    try {
+      const result = await api.reels.refreshAll();
+      setRefreshResult(result);
+    } catch (e) { alert(e.message); }
+    setLoad('refresh', false);
   }
 
   // ── Export ───────────────────────────────────────────────────────────────
@@ -260,6 +272,24 @@ export default function SettingsScreen() {
         {/* ── Data ─────────────────────────────────────────────────────────── */}
         <section className="settings-section">
           <h2 className="settings-section-title">{t('data_section')}</h2>
+
+          {/* Refresh thumbnails */}
+          <div className="data-row">
+            <div>
+              <button className="btn btn-ghost" onClick={handleRefreshThumbnails} disabled={loading.refresh}>
+                {loading.refresh ? t('refreshing') : t('refresh_thumbnails')}
+              </button>
+              <p className="hint-text" style={{ marginTop: 4 }}>{t('refresh_thumbnails_hint')}</p>
+              {refreshResult && (
+                <p className="success-text">
+                  {refreshResult.total === 0
+                    ? t('refresh_thumbnails_none')
+                    : t('refresh_thumbnails_result', { count: refreshResult.refreshed, total: refreshResult.total })}
+                </p>
+              )}
+            </div>
+          </div>
+
           <div className="data-row">
             {isPro ? (
               <button className="btn btn-ghost" onClick={handleExportAll} disabled={loading.exportAll}>

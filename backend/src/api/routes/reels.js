@@ -149,6 +149,79 @@ router.post('/from-url', async (req, res) => {
   res.status(201).json(data);
 });
 
+// POST /reels/refresh — bulk refresh thumbnails for reels without base64 thumbnails
+router.post('/refresh', async (req, res) => {
+  const userId = req.userProfile.id;
+
+  // Only fetch reels that don't yet have a base64 thumbnail (null, empty, or HTTP URL)
+  const { data: reels, error } = await supabaseAdmin
+    .from('reels')
+    .select('id, url')
+    .eq('user_id', userId)
+    .or('thumbnail.is.null,thumbnail.eq.,thumbnail.ilike.http%')
+    .limit(20);
+
+  if (error) return res.status(500).json({ error: error.message });
+  if (!reels?.length) return res.json({ refreshed: 0, total: 0 });
+
+  let refreshed = 0;
+
+  // Process in batches of 3 to avoid hammering Instagram
+  for (let i = 0; i < reels.length; i += 3) {
+    const batch = reels.slice(i, i + 3);
+    await Promise.allSettled(
+      batch.map(async reel => {
+        try {
+          const { thumbnail } = await fetchOgTags(reel.url);
+          if (thumbnail) {
+            await supabaseAdmin.from('reels').update({ thumbnail }).eq('id', reel.id);
+            refreshed++;
+          }
+        } catch { /* skip failed reels */ }
+      })
+    );
+  }
+
+  res.json({ refreshed, total: reels.length });
+});
+
+// POST /reels/:id/refresh-metadata — re-fetch OG tags and update thumbnail, author, caption
+router.post('/:id/refresh-metadata', async (req, res) => {
+  const userId = req.userProfile.id;
+  const { id } = req.params;
+
+  const { data: reel } = await supabaseAdmin
+    .from('reels')
+    .select('id, url')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (!reel) return res.status(404).json({ error: 'Reel not found' });
+
+  const { thumbnail, author, caption } = await fetchOgTags(reel.url);
+
+  const updates = {};
+  if (thumbnail) updates.thumbnail = thumbnail;
+  if (author)    updates.author    = author;
+  if (caption)   updates.caption   = caption;
+
+  if (!Object.keys(updates).length) {
+    const { data } = await supabaseAdmin.from('reels').select('*').eq('id', id).single();
+    return res.json(data);
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('reels')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
 // PATCH /reels/:id
 router.patch('/:id', async (req, res) => {
   const userId = req.userProfile.id;

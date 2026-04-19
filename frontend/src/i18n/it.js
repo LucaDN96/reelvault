@@ -133,6 +133,13 @@ export default {
   telegram_unlink: 'Scollega',
   telegram_unlink_confirm: 'Scollegare il tuo account Telegram?',
 
+  refresh_thumbnails: 'Aggiorna anteprime',
+  refresh_thumbnails_hint: 'Riscansiona le anteprime dei reel salvati prima del download automatico.',
+  refresh_thumbnails_result: 'Aggiornate {count} di {total} anteprime.',
+  refresh_thumbnails_none: 'Tutte le anteprime sono già aggiornate.',
+  refresh_metadata: 'Aggiorna metadati',
+  refreshing: 'Aggiornamento…',
+
   export_library: 'Esporta libreria',
   export_by_category: 'Esporta per categoria',
   export_btn: 'Esporta',

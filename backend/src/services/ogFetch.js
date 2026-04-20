@@ -7,7 +7,7 @@ const MAX_THUMBNAIL_BYTES = 400 * 1024; // 400 KB — skip base64 if larger
 
 /**
  * Downloads a thumbnail URL and returns it as a base64 data URI.
- * Falls back to the original URL on any error so the reel is still saved.
+ * Returns '' on any failure — never stores an expiring CDN URL.
  */
 async function thumbnailToBase64(url) {
   if (!url) return '';
@@ -16,21 +16,24 @@ async function thumbnailToBase64(url) {
       headers: { 'User-Agent': BROWSER_UA },
       signal: AbortSignal.timeout(6000)
     });
-    if (!res.ok) return url;
+    if (!res.ok) {
+      console.log(`[ogFetch] thumbnail CDN returned ${res.status}, skipping`);
+      return '';
+    }
 
     const contentType = (res.headers.get('content-type') || 'image/jpeg').split(';')[0].trim();
-    if (!contentType.startsWith('image/')) return url;
+    if (!contentType.startsWith('image/')) return '';
 
     const buf = Buffer.from(await res.arrayBuffer());
     if (buf.length > MAX_THUMBNAIL_BYTES) {
-      console.log(`[ogFetch] thumbnail too large (${buf.length} bytes), keeping URL`);
-      return url;
+      console.log(`[ogFetch] thumbnail too large (${buf.length} bytes), skipping`);
+      return '';
     }
 
     return `data:${contentType};base64,${buf.toString('base64')}`;
   } catch (e) {
     console.log(`[ogFetch] thumbnail download failed: ${e.message}`);
-    return url; // keep original URL as fallback
+    return ''; // never store an expiring CDN URL
   }
 }
 

@@ -153,12 +153,13 @@ router.post('/from-url', async (req, res) => {
 router.post('/refresh', async (req, res) => {
   const userId = req.userProfile.id;
 
-  // Only fetch reels that don't yet have a base64 thumbnail (null, empty, or HTTP URL)
+  // Find all reels whose thumbnail is not already a base64 data URI
+  // (catches both empty strings and expiring CDN URLs)
   const { data: reels, error } = await supabaseAdmin
     .from('reels')
     .select('id, url')
     .eq('user_id', userId)
-    .or('thumbnail.is.null,thumbnail.eq.,thumbnail.ilike.http%')
+    .not('thumbnail', 'ilike', 'data:%')
     .limit(20);
 
   if (error) return res.status(500).json({ error: error.message });

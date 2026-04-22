@@ -20,7 +20,12 @@ export default function AuthScreen() {
     setLoading(true);
     setError('');
 
-    const redirectTo = `${window.location.origin}${nextUrl}`;
+    // Always route through /auth/callback so the session is established
+    // before landing on a ProtectedRoute. Pass ?next= to forward the destination.
+    const callbackPath = nextUrl !== '/app'
+      ? `/auth/callback?next=${encodeURIComponent(nextUrl)}`
+      : '/auth/callback';
+    const redirectTo = `${window.location.origin}${callbackPath}`;
     const { error: err } = await signIn(email.trim(), redirectTo);
     if (err) {
       setError(err.message || t('error_generic'));

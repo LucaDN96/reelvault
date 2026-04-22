@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase.js';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const navigate = useNavigate();
   const [session,  setSession]  = useState(undefined); // undefined = loading
   const [profile,  setProfile]  = useState(null);
 
@@ -13,10 +15,18 @@ export function AuthProvider({ children }) {
       if (session) loadProfile(session.user.id);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       if (session) loadProfile(session.user.id);
       else setProfile(null);
+
+      // After magic link callback, forward to the ?next= destination.
+      // AuthCallback is the fallback for the case where there is no ?next=.
+      if (event === 'SIGNED_IN') {
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get('next');
+        if (next) navigate(next, { replace: true });
+      }
     });
 
     return () => subscription.unsubscribe();

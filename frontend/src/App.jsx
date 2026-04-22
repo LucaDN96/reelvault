@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 import { LanguageProvider } from './contexts/LanguageContext.jsx';
 import { UserPrefsProvider } from './contexts/UserPrefsContext.jsx';
@@ -15,14 +15,21 @@ import ConnectTelegramScreen from './screens/ConnectTelegramScreen.jsx';
 
 function AuthCallback() {
   const navigate = useNavigate();
-  useEffect(() => { navigate('/app', { replace: true }); }, []);
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    // Navigate to ?next= destination, falling back to /app
+    const next = searchParams.get('next') || '/app';
+    navigate(next, { replace: true });
+  }, []);
   return null;
 }
 
 function ProtectedRoute({ children }) {
   const { session } = useAuth();
+  const location = useLocation();
   if (session === undefined) return <div className="full-center">Loading…</div>;
-  if (!session) return <Navigate to="/app/auth" replace />;
+  // Preserve the current URL so auth can redirect back after login
+  if (!session) return <Navigate to={`/app/auth?next=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   return children;
 }
 

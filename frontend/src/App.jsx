@@ -12,6 +12,8 @@ import CollectionsScreen     from './screens/CollectionsScreen.jsx';
 import CollectionDetailScreen from './screens/CollectionDetailScreen.jsx';
 import AcceptInviteScreen    from './screens/AcceptInviteScreen.jsx';
 import ConnectTelegramScreen from './screens/ConnectTelegramScreen.jsx';
+import ForgotPasswordScreen  from './screens/ForgotPasswordScreen.jsx';
+import ResetPasswordScreen   from './screens/ResetPasswordScreen.jsx';
 
 function AuthCallback() {
   const navigate = useNavigate();
@@ -48,6 +50,12 @@ function AppRoutes() {
 
       <Route path="/app/auth" element={
         <PublicRoute><AuthScreen /></PublicRoute>
+      } />
+      <Route path="/app/auth/forgot-password" element={
+        <PublicRoute><ForgotPasswordScreen /></PublicRoute>
+      } />
+      <Route path="/app/auth/reset-password" element={
+        <PublicRoute><ResetPasswordScreen /></PublicRoute>
       } />
       <Route path="/app" element={
         <ProtectedRoute><LibraryScreen /></ProtectedRoute>

@@ -334,6 +334,17 @@ a:hover { text-decoration: underline; }
 }
 .auth-sent-icon { font-size: 40px; }
 .auth-sent p { color: var(--text-muted); }
+.auth-tabs { display: flex; gap: 0; margin-bottom: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 4px; }
+.auth-tab { flex: 1; padding: 8px; border: none; background: transparent; color: var(--text-muted); font-size: 15px; font-weight: 500; border-radius: calc(var(--radius) - 2px); cursor: pointer; transition: background 0.15s, color 0.15s; }
+.auth-tab.active { background: var(--purple); color: #fff; }
+.auth-divider { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 13px; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.auth-oauth-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+.auth-oauth-btn:hover { background: var(--bg); }
+.auth-oauth-btn svg { flex-shrink: 0; }
+.auth-sub-links { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 4px; }
+.auth-sub-links a, .auth-sub-links button { background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; text-decoration: underline; padding: 0; }
+.auth-back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; text-decoration: none; align-self: flex-start; }
 
 /* ── Library header (wordmark + subtitle + expandable search) ────────────── */
 .lib-header {

@@ -20,12 +20,14 @@ export function AuthProvider({ children }) {
       if (session) loadProfile(session.user.id);
       else setProfile(null);
 
-      // After magic link callback, forward to the ?next= destination.
-      // AuthCallback is the fallback for the case where there is no ?next=.
       if (event === 'SIGNED_IN') {
         const params = new URLSearchParams(window.location.search);
         const next = params.get('next');
         if (next) navigate(next, { replace: true });
+      }
+
+      if (event === 'PASSWORD_RECOVERY') {
+        navigate('/app/auth/reset-password', { replace: true });
       }
     });
 
@@ -42,10 +44,32 @@ export function AuthProvider({ children }) {
     await loadProfile(session.user.id);
   }
 
+  // Magic link (existing)
   async function signIn(email, redirectTo) {
     return supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectTo || `${window.location.origin}/app` }
+    });
+  }
+
+  async function signInWithPassword(email, password) {
+    return supabase.auth.signInWithPassword({ email, password });
+  }
+
+  async function signUpWithPassword(email, password) {
+    return supabase.auth.signUp({ email, password });
+  }
+
+  async function signInWithOAuth(provider) {
+    return supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/auth/callback` }
+    });
+  }
+
+  async function resetPassword(email) {
+    return supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/app/auth/reset-password`
     });
   }
 
@@ -54,7 +78,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ session, profile, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ session, profile, signIn, signInWithPassword, signUpWithPassword, signInWithOAuth, resetPassword, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

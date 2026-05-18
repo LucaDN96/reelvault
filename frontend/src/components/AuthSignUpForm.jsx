@@ -20,7 +20,7 @@ export default function AuthSignUpForm() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!email.trim()) return;
-    if (password.length < 6) { setError(t('error_generic')); return; }
+    if (password.length < 6) { setError(t('error_password_too_short')); return; }
     setLoading(true);
     setError('');
     const { error: err } = await signUpWithPassword(email.trim(), password);

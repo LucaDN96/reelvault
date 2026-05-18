@@ -54,9 +54,7 @@ function AppRoutes() {
       <Route path="/app/auth/forgot-password" element={
         <PublicRoute><ForgotPasswordScreen /></PublicRoute>
       } />
-      <Route path="/app/auth/reset-password" element={
-        <PublicRoute><ResetPasswordScreen /></PublicRoute>
-      } />
+      <Route path="/app/auth/reset-password" element={<ResetPasswordScreen />} />
       <Route path="/app" element={
         <ProtectedRoute><LibraryScreen /></ProtectedRoute>
       } />

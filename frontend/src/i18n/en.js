@@ -13,7 +13,6 @@ export default {
   auth_magic_link_instead: 'Send magic link instead',
   auth_continue_google: 'Continue with Google',
   auth_continue_apple: 'Continue with Apple',
-  auth_forgot_title: 'Reset your password',
   auth_forgot_instructions: 'Enter your email and we\'ll send a reset link.',
   auth_send_reset_link: 'Send reset link',
   auth_reset_check_email: 'Check your email for a password reset link.',
@@ -25,6 +24,8 @@ export default {
   error_invalid_credentials: 'Incorrect email or password.',
   error_email_taken: 'An account with this email already exists.',
   error_email_not_confirmed: 'Please verify your email before signing in.',
+  error_password_too_short: 'Password must be at least 6 characters.',
+  error_passwords_mismatch: 'Passwords do not match.',
 
   // Library
   new_reel_toast: 'New reel added ✨',

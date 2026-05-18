@@ -13,7 +13,6 @@ export default {
   auth_magic_link_instead: 'Invia il link magico invece',
   auth_continue_google: 'Continua con Google',
   auth_continue_apple: 'Continua con Apple',
-  auth_forgot_title: 'Reimposta la password',
   auth_forgot_instructions: 'Inserisci la tua email e ti invieremo un link per reimpostare la password.',
   auth_send_reset_link: 'Invia link di reimpostazione',
   auth_reset_check_email: 'Controlla la tua email per il link di reimpostazione della password.',
@@ -25,6 +24,8 @@ export default {
   error_invalid_credentials: 'Email o password errati.',
   error_email_taken: 'Esiste già un account con questa email.',
   error_email_not_confirmed: 'Verifica la tua email prima di accedere.',
+  error_password_too_short: 'La password deve contenere almeno 6 caratteri.',
+  error_passwords_mismatch: 'Le password non corrispondono.',
 
   // Library
   new_reel_toast: 'Nuovo reel aggiunto ✨',

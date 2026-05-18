@@ -14,8 +14,8 @@ export default function ResetPasswordScreen() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (password.length < 6) { setError(t('error_generic')); return; }
-    if (password !== confirm) { setError(t('error_generic')); return; }
+    if (password.length < 6) { setError(t('error_password_too_short')); return; }
+    if (password !== confirm) { setError(t('error_passwords_mismatch')); return; }
     setLoading(true);
     setError('');
     const { error: err } = await supabase.auth.updateUser({ password });
